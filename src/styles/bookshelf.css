@@ -1,0 +1,373 @@
+ .library-page{
+    max-width:1240px;
+    margin:auto;
+    padding:48px 42px 28px
+}
+
+.library-header{
+    text-align:center;
+    padding:26px 0 35px
+}
+
+.eyebrow{
+    color:var(--gold)
+}
+
+.library-header h1{
+    font:500 clamp(3rem,7vw,5.8rem)/.95 "Cormorant Garamond",serif
+    ;margin:18px 0 14px;
+    color:#f4ead7
+}
+
+.library-header h1 em{
+    color:#c5a46a;
+    font-weight:400
+}
+
+.header-copy{
+    color:#c2b39b;
+    font:italic 1.1rem "Cormorant Garamond",serif
+}
+
+.header-rule{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--gold);
+    margin-top:25px
+}
+
+.header-rule:before,.header-rule:after{
+    content:"";
+    width:90px;
+    height:1px;
+    background:#715638;
+    margin:0 13px
+}
+
+.library-tools{
+    display:flex;
+    gap:12px;
+    max-width:850px;
+    margin:0 auto 25px
+}
+
+.search-wrap{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#f0e6d5;
+    color:#51402b;
+    padding:0 15px;
+    border-radius:3px
+}
+
+.search-wrap span{
+    font-size:1.5rem
+}
+
+.search-wrap input{
+    width:100%;
+    border:0;
+    outline:0;
+    background:transparent;
+    padding:13px 0;
+    color:#332719
+}
+
+.library-tools select{
+    background:#392a1c;
+    color:#e8dcc8;
+    border:1px solid #72583a;
+    border-radius:3px;
+    padding:0 13px;
+    min-width:130px
+}
+
+.status-line{
+    max-width:850px;
+    margin:0 auto 22px;
+    color:#a99b85;
+    font-size:.75rem;
+    letter-spacing:.08em
+}
+
+.shelves{
+    display:grid;
+    gap:35px
+}
+
+.shelf-section{
+    min-width:0
+}
+
+.shelf-heading{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-bottom:1px solid #6d5235;
+    margin-bottom:14px;
+    padding-bottom:8px
+}
+
+.shelf-heading h2{
+    font:500 1.8rem "Cormorant Garamond",serif;
+    color:#e9d8bb;
+    margin:0
+}
+
+.shelf-heading span{
+    color:#9c8058
+}
+
+.shelf-row{
+    position:relative;
+    display:flex;
+    align-items:flex-end;
+    gap:11px;
+    min-height:205px;
+    padding:10px 13px 18px;
+    overflow:visible
+}
+
+.shelf-wood{
+    position:absolute;
+    z-index:0;
+    bottom:4px;
+    left:0;
+    right:0;
+    height:15px;
+    background:linear-gradient(#9a6b3b,#59371f 45%,#392315);
+    border-radius:2px;
+    box-shadow:0 9px 13px #090604;pointer-events:none
+}
+
+.book-spine{
+    position:relative;
+    z-index:1;
+    flex:0 1 100px;
+    width:100px;
+    height:175px;
+    border:0;
+    border-left:5px solid #ffffff18;
+    border-right:2px solid #100b08aa;
+    border-radius:3px 5px 1px 1px;color:#f0dfbd;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 8px 12px;
+    box-shadow:4px 3px 7px #0b0806aa,inset 4px 0 6px #ffffff12;
+    transition:transform .22s,filter .22s;overflow:visible
+}
+
+.book-spine:hover,.book-spine:focus-visible{
+    transform:translateY(-12px) scale(1.035);
+    filter:brightness(1.18);
+    z-index:8;
+    outline:1px solid #d3b47d
+}
+
+.spine-0{
+    background:linear-gradient(90deg,#492c20,#81513a 45%,#4b2b1e)
+    }
+    
+.spine-1{
+    background:linear-gradient(90deg,#263c3a,#42665d 45%,#263c36)
+}
+
+.spine-2{
+    background:linear-gradient(90deg,#5a4427,#9b7743 45%,#5b4024)
+}
+
+.spine-3{
+    background:linear-gradient(90deg,#34334a,#626184 45%,#33314a)
+}
+
+.spine-4{
+    background:linear-gradient(90deg,#5a2e2b,#96504a 45%,#592d29)
+}
+
+.spine-5{
+    background:linear-gradient(90deg,#344253,#59728a 45%,#303e50)
+}
+
+.spine-mark{
+    font-size:.8rem;
+    color:#d8b97d
+}
+
+.spine-title{
+    font:600 1rem/1.15 "Cormorant Garamond",serif;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    max-height:118px;
+    overflow:hidden;
+    text-align:center;
+    text-shadow:0 1px 2px #21180f
+}
+
+.spine-subtitle{
+    font-size:.46rem;
+    letter-spacing:.12em;
+    white-space:nowrap;
+    max-width:100%;
+    overflow:hidden
+}
+
+.book-tooltip{
+    position:absolute;
+    display:flex;gap:15px;
+    left:calc(100% + 15px);
+    bottom:12px;
+    width:340px;
+    padding:12px;
+    background:#f5efe3ed;
+    color:#30271d;
+    border:1px solid #fff9;
+    border-radius:4px;
+    box-shadow:0 12px 35px #080604aa;
+    opacity:0;
+    visibility:hidden;
+    transform:translateX(-7px);
+    transition:.2s;
+    pointer-events:none;
+    text-align:left
+}
+
+.book-spine:hover .book-tooltip,.book-spine:focus-visible .book-tooltip{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(0)
+}
+
+.book-spine:nth-last-child(-n+2) .book-tooltip{
+    left:auto;
+    right:calc(100% + 15px);
+    transform:translateX(7px)
+}
+
+.book-spine:nth-last-child(-n+2):hover .book-tooltip{
+    transform:translateX(0)
+}
+
+.tooltip-image{
+    width:105px;
+    min-width:105px;
+    height:125px;
+    background:#d9c9ae;
+    display:grid;
+    place-items:center;
+    overflow:hidden
+}
+
+.tooltip-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover
+}
+
+.placeholder-star{
+    font-size:2rem;
+    color:#997c50
+}
+
+.tooltip-copy{
+    display:flex;
+    flex-direction:column;
+    gap:5px
+}
+
+.tooltip-copy strong{
+    font:600 1.25rem/1.05 "Cormorant Garamond",serif
+}
+
+.tooltip-copy small{
+    color:#9a7440;
+    text-transform:uppercase;
+    font-size:.58rem;
+    letter-spacing:.1em
+}
+
+.tooltip-copy>span{
+    font-size:.7rem;
+    line-height:1.5;
+    color:#5d5142;
+    display:-webkit-box;
+    -webkit-line-clamp:4;
+    -webkit-box-orient:vertical;
+    overflow:hidden
+}
+
+.tooltip-copy i{
+    font-style:normal;
+    font-size:.56rem;
+    letter-spacing:.12em;
+    color:#9a7440;
+    margin-top:auto
+}
+
+.library-footer{
+    text-align:center;
+    color:#806c50;
+    margin-top:55px
+}
+
+.library-footer span{
+    padding:0 9px;
+    color:var(--gold)
+}
+
+@media(
+    max-width:700px
+)
+
+{
+    .library-page{
+        padding:25px 17px
+    }
+    
+    .library-tools{
+        flex-wrap:wrap
+    }
+    
+    .search-wrap{
+        flex-basis:100%
+    }
+    
+    .library-tools select{
+        flex:1;
+        min-height:42px
+    }
+    
+    .shelf-row{
+        overflow-x:auto;
+        min-height:190px
+    }
+    
+    .book-spine{
+        flex:0 0 82px;
+        width:82px;
+        height:160px
+    }
+    
+    .book-tooltip{
+        position:fixed;
+        left:50% !important;
+        right:auto !important;
+        bottom:18px;
+        top:auto;
+        width:min(340px,calc(100vw - 28px));
+        transform:translate(-50%,10px) !important;z-index:30
+    }
+    
+    .book-spine:hover .book-tooltip{
+        transform:translate(-50%,0) !important
+    }
+    
+    .shelf-heading h2{
+        font-size:1.5rem
+    }
+
+}

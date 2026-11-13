@@ -1,0 +1,83 @@
+:root{
+    font-family:"DM Sans",sans-serif;
+    color:#eee5d4;
+    background:#21180f;
+    font-synthesis:none;
+    text-rendering:optimizeLegibility;
+    --ink:#21180f;
+    --paper:#eee5d4;
+    --gold:#c5a46a;
+    --muted:#a99b85
+}
+
+*{
+    box-sizing:border-box
+}
+
+body{
+    margin:0;
+    min-width:320px;
+    background:radial-gradient(
+        ellipse at 50% 0%,
+        #493522 0,
+        #21180f 55%,
+        #17110c 100%
+    );
+        
+    min-height:100vh
+}
+
+button,input,select{
+    font:inherit
+}
+
+button{
+    cursor:pointer
+}
+
+.boot-screen{
+    min-height:60vh;
+    display:grid;
+    place-content:center;
+    justify-items:center;
+    color:var(--muted);
+    gap:14px
+}
+
+.loader{
+    width:28px;
+    height:28px;
+    border:2px solid #6e5738;
+    border-top-color:var(--gold);
+    border-radius:50%;
+    animation:spin .8s linear infinite
+}
+
+.eyebrow,.page-kicker,.shelf-heading span,.reader-counter,.reader-hint,.library-footer,.art-caption,.art-bottom,.page-ornament{
+    letter-spacing:.18em;
+    font-size:.67rem
+}
+
+.text-button{
+    border:0;
+    background:none;
+    color:var(--gold);
+    letter-spacing:.12em;
+    font-size:.72rem;
+    padding:10px 0
+}
+
+.text-button:hover{
+    color:#f4dcae
+}
+
+.error-title{
+    color:#efb19d;
+    font-weight:700
+}
+
+.empty-state{
+    padding:40px;
+    text-align:center;
+    color:var(--muted)
+}

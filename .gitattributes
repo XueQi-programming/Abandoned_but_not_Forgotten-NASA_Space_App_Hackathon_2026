@@ -1,0 +1,12 @@
+# Automatically normalize text files
+* text=auto
+
+# Ensure web development files use LF
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.svg text eol=lf
+*.sql text eol=lf
+*.toml text eol=lf
+*.md text eol=lf

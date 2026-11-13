@@ -1,0 +1,283 @@
+ .reader{
+    min-height:100vh;
+    padding:20px clamp(16px,4vw,55px) 25px;
+    background:radial-gradient(ellipse at 50% 10%,#4b3824,#21180f 65%)
+}
+
+.reader-topbar{
+    height:45px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid #60482d
+}
+
+.reader-brand{
+    font:600 .72rem "Cormorant Garamond",serif;
+    letter-spacing:.2em;
+    color:#b99a68
+}
+
+.reader-counter{
+    color:#9d896c
+}
+
+.reader-stage{
+    max-width:1320px;
+    min-height:min(70vh,720px);
+    margin:30px auto 20px;
+    display:grid;
+    grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);
+    background:#e9ddc7;
+    color:#30271d;
+    box-shadow:0 20px 55px #09060480;
+    border:9px solid #6a4829;
+    outline:1px solid #b28a54;
+    position:relative;
+    overflow:hidden
+}
+
+.scroll-art{
+    min-height:550px;
+    background:#d8c7a8;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    padding:20px 20px 15px;
+    border-right:1px solid #bba98a
+}
+
+.art-caption,.art-bottom{
+    color:#826c4c;
+    text-align:center
+}
+
+.art-image{
+    flex:1;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    margin:15px 0
+}
+
+.art-image img{
+    width:100%;
+    height:100%;
+    max-height:610px;
+    object-fit:contain;
+    mix-blend-mode:multiply
+}
+
+.art-bottom span{
+    padding-left:10px;
+    color:#a27b42
+}
+
+.art-placeholder{
+    width:100%;
+    height:100%;
+    min-height:400px;
+    display:grid;
+    place-content:center;
+    text-align:center;
+    color:#987a4f;
+    background:repeating-linear-gradient(135deg,#d9c9aa,#d9c9aa 12px,#d2c09f 12px,#d2c09f 13px)
+}
+
+.art-placeholder span{
+    font-size:5rem
+}
+
+.art-placeholder p{
+    letter-spacing:.3em;
+    font-size:.65rem
+}
+
+.page-content{
+    padding:clamp(25px,5vw,65px);
+    background:linear-gradient(90deg,#e8dcc6,#f4ecdE);
+    position:relative;
+    overflow-y:auto;
+    max-height:720px
+}
+
+.page-kicker{
+    color:#9a7747
+}
+
+.page-content h1{
+    font:500 clamp(2.4rem,4vw,4.3rem)/.95 "Cormorant Garamond",serif;
+    margin:17px 0;
+    color:#342719
+}
+
+.page-ornament{
+    color:#b18c54;
+    margin:20px 0 28px
+}
+
+.page-body{font:400 .95rem/1.85 "Cormorant Garamond",serif;
+    color:#4c4031
+}
+
+.page-body p{
+    margin:0 0 1.1em
+}
+
+.page-body .lead{
+    font-size:1.22rem;
+    line-height:1.6;
+    color:#55442e
+}
+
+.mission-facts{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px 22px;
+    margin-top:35px
+}
+
+.mission-facts div{
+    border-top:1px solid #c8b797;
+    padding-top:8px
+}
+
+.mission-facts dt{
+    font:600 .58rem "DM Sans",sans-serif;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#98764b
+}
+
+.mission-facts dd{
+    margin:5px 0 0;
+    font-size:1rem
+}
+
+.section-text{
+    white-space:normal
+}
+
+.section-text p{
+    margin-bottom:1.1em
+}
+
+.equipment-list section{
+    border-top:1px solid #c8b797;
+    padding:13px 0
+}
+
+.equipment-list h3{
+    font:600 1.45rem "Cormorant Garamond",serif;
+    margin:0
+}
+
+.equipment-type,.equipment-list small{
+    font:600 .58rem "DM Sans",sans-serif;
+    color:#9b794b;
+    letter-spacing:.1em;
+    text-transform:uppercase
+}
+
+.source-list{
+    padding-left:20px
+}
+
+.source-list li{
+    padding:0 0 17px 7px
+}
+
+.source-list li strong,.source-list li span,.source-list li a{
+    display:block
+}
+
+.source-list li a{
+    color:#8c6435;
+    font:600 .7rem "DM Sans",sans-serif
+}
+
+.reader-controls{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px
+}
+
+.reader-controls button{
+    width:42px;
+    height:38px;
+    background:#38291c;
+    color:#e9d5b4;
+    border:1px solid #80613c;
+    border-radius:2px;
+    font-size:1.1rem
+}
+
+.reader-controls button:hover:not(:disabled){
+    background:#6a4a2b
+}
+
+.reader-controls button:disabled{
+    opacity:.3;
+    cursor:not-allowed
+}
+
+.reader-controls span{
+    min-width:70px;
+    text-align:center;
+    color:#c4ad87;
+    font-size:.75rem
+}
+
+.reader-hint{
+    text-align:center;
+    color:#78664d;
+    margin-top:13px
+}
+
+.reader-loading,.reader-error{
+    padding:25px clamp(16px,4vw,55px);
+    color:var(--paper)
+}
+
+.reader-error h1{
+    font:2.8rem "Cormorant Garamond",serif
+}
+
+.reader-error p{
+    color:#c2b39b
+}
+
+@media(max-width:800px){
+    .reader-stage{
+        grid-template-columns:1fr;min-height:0
+    }
+    
+    .scroll-art{
+        min-height:260px;
+        height:34vh;
+        border-right:0;
+        border-bottom:1px solid #bba98a
+    }
+    
+    .art-image img{
+        max-height:30vh
+    }
+    
+    .page-content{
+        max-height:none;
+        min-height:420px
+    }
+    
+    .reader-brand{
+        display:none
+    }
+    
+    .mission-facts{
+        gap:12px
+    }
+    
+    .reader-counter{
+        font-size:.55rem
+    }
+}
