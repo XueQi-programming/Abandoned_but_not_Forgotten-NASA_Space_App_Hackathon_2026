@@ -1,50 +1,3102 @@
-@keyframes spin{
-    to{
-        transform:rotate(360deg)
-    }
+/* Horizontal page entry and soft handscroll transitions. */
+@keyframes panelFadeFromRight{from{opacity:0;transform:translateX(38px)}to{opacity:1;transform:translateX(0)}}
+@keyframes panelFadeFromLeft{from{opacity:0;transform:translateX(-38px)}to{opacity:1;transform:translateX(0)}}
+
+/* Full-screen book opening: no visible spine; the left cover swings away. */
+.book-opening-overlay{position:fixed;inset:0;z-index:9999;overflow:hidden;background:#d9c9a8;opacity:1;transition:opacity .55s ease;}
+.book-opening-overlay.book-opening-complete{opacity:0;pointer-events:none;}
+.opening-book{position:absolute;inset:0;width:100vw;height:100dvh;overflow:hidden;background:#d9c9a8;}
+.opening-cover{position:absolute;z-index:4;inset:0 0 0 auto;width:50.2%;transform-origin:right center;background:linear-gradient(90deg,#24150e 0%,#68432c 20%,#9b7048 52%,#58351f 100%);border:2px solid #c09a62;border-left:0;border-radius:0 5px 5px 0;box-shadow:inset 7px 0 12px rgba(255,255,255,.12),inset -5px 0 9px rgba(0,0,0,.32),8px 0 30px rgba(0,0,0,.3);animation:coverSwingOpen 1.05s cubic-bezier(.18,.72,.2,1) .04s both;backface-visibility:hidden;}
+.opening-cover:after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;color:#e5c78d;font:clamp(2.2rem,7vw,6rem) "Cormorant Garamond",serif;text-shadow:0 2px 4px #21180f;}
+@keyframes coverSwingOpen{0%{transform:perspective(1800px) rotateY(0deg)}72%{transform:perspective(1800px) rotateY(158deg)}100%{transform:perspective(1800px) rotateY(180deg)}}
+
+/* A duplicated seamless handscroll travels right-to-left without a hard seam. */
+.opening-panorama{position:absolute;z-index:2;inset:0;overflow:hidden;opacity:0;background:#d9c9a8;transition:opacity .55s ease .04s;}
+.panorama-active .opening-panorama{opacity:1;}
+.panorama-moving-track{position:absolute;inset:0 auto 0 0;width:200%;height:100%;display:flex;will-change:transform;animation:handscrollLeft 42s linear infinite;}
+.panorama-art{display:block;flex:0 0 50%;width:50%;height:100%;object-fit:cover;}
+@keyframes handscrollLeft{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+.panorama-message{position:absolute;z-index:6;left:50%;top:50%;width:min(780px,84vw);transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:12px;padding:25px 30px;text-align:center;color:#403322;background:rgba(244,235,215,.78);border-top:1px solid rgba(100,76,46,.48);border-bottom:1px solid rgba(100,76,46,.48);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;pointer-events:none;}
+.panorama-active .panorama-message{animation:messageReveal .85s ease .12s forwards;}
+.panorama-message p{margin:0;color:#443322;font:600 clamp(.72rem,1.5vw,1rem) 'DM Sans',sans-serif;letter-spacing:.24em;}
+.panorama-message small{color:#65543d;font:italic clamp(1rem,2vw,1.35rem) 'Cormorant Garamond',serif;letter-spacing:.04em;}
+.panorama-message-rule{display:block;width:min(230px,50%);height:1px;background:linear-gradient(90deg,transparent,#98784b,transparent);}
+@keyframes messageReveal{from{opacity:0;transform:translate(-50%,-46%)}to{opacity:1;transform:translate(-50%,-50%)}}
+
+/* Full-screen horizontal reader, visually continuous with the opening scroll. */
+.immersive-reader{position:fixed;inset:0;z-index:20;width:100vw;height:100dvh;min-height:0;overflow:hidden;background:#d9c9a8;color:#34291d;}
+.reader-panorama-backdrop{position:absolute;inset:0;z-index:0;overflow:hidden;background:#d9c9a8;}
+.reader-panorama-backdrop:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(237,224,197,.74),rgba(245,237,218,.83) 48%,rgba(237,224,197,.74));}
+.reader-panorama-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;filter:saturate(.78) sepia(.12);}
+.reader-topbar{position:absolute;z-index:20;top:0;left:0;right:0;height:54px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 clamp(14px,3vw,38px);background:transparent;color:#493522;border-bottom:1px solid rgba(92,67,39,.32);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
+.reader-back{justify-self:start;border:0;background:transparent;color:#493522;font:600 .68rem 'DM Sans',sans-serif;letter-spacing:.13em;cursor:pointer;}
+.reader-brand{justify-self:center;color:#493522;font:600 .68rem 'DM Sans',sans-serif;letter-spacing:.2em;white-space:nowrap;}
+.reader-counter{justify-self:end;color:#765a36;font:500 .64rem 'DM Sans',sans-serif;letter-spacing:.13em;white-space:nowrap;}
+.reader-viewport{position:absolute;inset:54px 0 66px;overflow:hidden;touch-action:pan-y;}
+.reader-track{position:absolute;inset:0 auto 0 0;height:100%;display:flex;will-change:transform;transition:transform .78s cubic-bezier(.2,.72,.18,1);}
+.reader-panel{position:relative;flex:0 0 100vw;width:100vw;height:100%;min-width:100vw;display:grid;overflow:hidden;opacity:.74;}
+.reader-panel.is-active{opacity:1;}
+.reader-panel.enter-from-right{animation:panelFadeFromRight .72s ease both;}
+.reader-panel.enter-from-left{animation:panelFadeFromLeft .72s ease both;}
+
+/* First spread: modest mission cover and synopsis on the left; clickable TOC on the right. */
+.intro-panel{grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:clamp(16px,3vw,48px);padding:clamp(22px,4vh,42px) clamp(18px,4vw,58px);}
+.intro-main{min-width:0;display:grid;grid-template-columns:minmax(120px, .36fr) minmax(0,1fr);align-items:center;gap:clamp(18px,3vw,42px);padding:clamp(14px,2vw,28px);background:rgba(247,239,220,.84);border:1px solid rgba(117,88,53,.4);box-shadow:0 18px 48px rgba(69,49,28,.16),inset 0 0 0 5px rgba(255,255,255,.2);backdrop-filter:blur(8px);}
+.intro-cover-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.intro-cover{display:block;width:min(100%,190px);height:clamp(155px,31vh,285px);object-fit:cover;border:5px solid #f0e4c9;outline:1px solid rgba(111,77,42,.5);box-shadow:0 13px 25px rgba(53,36,20,.28);}
+.intro-cover-placeholder{display:grid;place-items:center;background:linear-gradient(145deg,#765037,#302017);color:#e9d4a8;font-size:3rem;}
+.intro-cover-caption{color:#907047;font:600 .58rem 'DM Sans',sans-serif;letter-spacing:.19em;}
+.intro-copy{min-width:0;}
+.page-kicker{margin:0 0 10px;color:#987548;font:600 .64rem 'DM Sans',sans-serif;letter-spacing:.18em;}
+.intro-copy h1{margin:0;color:#493522;font:500 clamp(2rem,4.2vw,4.3rem)/.98 'Cormorant Garamond',serif;}
+.intro-rule{margin:13px 0 17px;color:#a27b49;letter-spacing:.18em;}
+.intro-synopsis{max-width:760px;margin:0 0 18px;color:#4c4031;font:clamp(.96rem,1.45vw,1.18rem)/1.55 'Cormorant Garamond',serif;}
+.mission-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px;margin:0;}
+.mission-facts div{min-width:0;padding-bottom:6px;border-bottom:1px solid rgba(132,102,65,.2);}
+.mission-facts dt{color:#9a784b;font:600 .56rem 'DM Sans',sans-serif;letter-spacing:.13em;text-transform:uppercase;}
+.mission-facts dd{margin:3px 0 0;color:#46392a;font:500 .83rem 'DM Sans',sans-serif;overflow-wrap:anywhere;}
+.intro-direction{margin:14px 0 0;color:#88683f;font:italic .9rem 'Cormorant Garamond',serif;}
+.intro-direction span{padding-left:8px;font-style:normal;}
+.intro-toc{min-width:0;display:flex;flex-direction:column;justify-content:center;padding:clamp(18px,2.6vw,34px);background:rgba(247,239,220,.9);border:1px solid rgba(117,88,53,.4);box-shadow:0 18px 48px rgba(69,49,28,.16);backdrop-filter:blur(9px);}
+.intro-toc h2{margin:0 0 18px;color:#493522;font:500 clamp(1.6rem,2.6vw,2.5rem)/1 'Cormorant Garamond',serif;}
+.intro-toc ol{display:grid;grid-template-columns:1fr;gap:3px;list-style:none;padding:0;margin:0;max-height:min(62vh,560px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#b99a6a transparent;}
+.intro-toc li button{width:100%;display:grid;grid-template-columns:30px 1fr 18px;align-items:center;gap:10px;padding:10px 7px;border:0;border-bottom:1px solid rgba(132,102,65,.2);background:transparent;color:#4d402f;text-align:left;font:500 .88rem 'DM Sans',sans-serif;cursor:pointer;transition:background .18s,color .18s;}
+.intro-toc li button:hover,.intro-toc li button:focus-visible{background:rgba(172,139,91,.15);color:#79562f;outline:0;}
+.toc-number{color:#a17c4c;font-size:.66rem;letter-spacing:.08em;}
+.toc-arrow{color:#a17c4c;text-align:right;}
+.toc-empty{color:#79684f;font:italic 1rem 'Cormorant Garamond',serif;}
+
+/* Chapter spreads: chapter label lives on the left; readable content on the right. */
+.chapter-panel{grid-template-columns:minmax(220px,.42fr) minmax(0,1fr);gap:clamp(14px,2.5vw,34px);padding:clamp(22px,4vh,42px) clamp(18px,4vw,58px);}
+.chapter-rail{min-width:0;display:flex;flex-direction:column;justify-content:center;padding:clamp(20px,3vw,42px);background:rgba(67,49,32,.86);border:1px solid rgba(238,218,182,.45);box-shadow:0 18px 48px rgba(40,27,16,.22);color:#f2e4c8;backdrop-filter:blur(9px);}
+.chapter-rail .page-kicker{color:#d4b37c;line-height:1.5;}
+.chapter-rail h2{margin:5px 0 12px;color:#f5e7cb;font:500 clamp(2rem,4vw,4.4rem)/.98 'Cormorant Garamond',serif;overflow-wrap:anywhere;}
+.chapter-rail-rule{color:#d4b37c;letter-spacing:.2em;}
+.chapter-rail-caption{color:#ddc9a7;font:italic 1rem/1.4 'Cormorant Garamond',serif;}
+.chapter-thumb{width:min(100%,220px);height:clamp(90px,17vh,165px);margin-top:14px;object-fit:cover;border:1px solid rgba(235,214,178,.42);opacity:.88;}
+.chapter-reading-surface{min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;padding:clamp(14px,2vw,28px);background:rgba(248,241,224,.91);border:1px solid rgba(117,88,53,.45);box-shadow:0 18px 48px rgba(69,49,28,.18),inset 0 0 0 5px rgba(255,255,255,.24);backdrop-filter:blur(10px);}
+.chapter-reading-inner{width:min(100%,1050px);max-height:100%;overflow-y:auto;padding:clamp(12px,2vw,26px);scrollbar-width:thin;scrollbar-color:#b99a6a transparent;}
+.chapter-reading-inner h1{margin:0;color:#493522;font:500 clamp(1.8rem,3.5vw,3.4rem)/1.04 'Cormorant Garamond',serif;}
+.chapter-reading-inner .intro-rule{margin:12px 0 18px;}
+.chapter-body{color:#463b2d;font:clamp(.96rem,1.35vw,1.12rem)/1.72 'Cormorant Garamond',serif;overflow-wrap:anywhere;}
+.chapter-body p{margin:0 0 1em;}
+.chapter-body h2,.chapter-body h3{color:#5b432b;font-family:'Cormorant Garamond',serif;line-height:1.1;margin:1.1em 0 .45em;}
+.chapter-body h2{font-size:1.65em}.chapter-body h3{font-size:1.35em}
+.chapter-body img{max-width:100%;height:auto;}
+.chapter-body a,.chapter-body .source-list a{color:#805b31;text-decoration:underline;text-underline-offset:3px;}
+.chapter-lead{font-size:1.16em;font-style:italic;color:#705638;}
+.equipment-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+.equipment-list section{padding:12px;border:1px solid rgba(133,101,62,.25);background:rgba(220,205,175,.22);}
+.equipment-list h3{margin:0 0 5px;}
+.equipment-type{color:#9a784b;font:600 .65rem 'DM Sans',sans-serif;letter-spacing:.08em;text-transform:uppercase;}
+.source-list{padding-left:1.4em}.source-list li{margin:0 0 1em;padding-left:.3em}.source-list li strong,.source-list li span,.source-list li a{display:block}.source-list li span{color:#7c6a52;font-size:.9em;}
+
+.reader-footer{position:absolute;z-index:20;left:0;right:0;bottom:0;min-height:66px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:7px clamp(14px,3vw,38px);background:transparent;color:#493522;border-top:1px solid rgba(92,67,39,.32);box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;}
+.reader-footer-brand{color:#765a36;font:600 .56rem 'DM Sans',sans-serif;letter-spacing:.13em;white-space:nowrap;}
+.reader-footer-brand span{padding:0 5px;color:#b9955e;}
+.reader-controls{display:flex;align-items:center;justify-content:center;gap:8px;color:#765a36;}
+.reader-controls button{width:34px;height:32px;border:1px solid rgba(238,220,188,.35);border-radius:4px;background:rgba(255,255,255,.18);color:#493522;font-size:1rem;cursor:pointer;transition:background .18s,border-color .18s;}
+.reader-controls button:hover:not(:disabled){background:rgba(255,255,255,.2);border-color:rgba(238,220,188,.7);}
+.reader-controls button:disabled{opacity:.32;cursor:not-allowed;}
+#page-indicator{min-width:55px;text-align:center;color:#765a36;font:600 .65rem 'DM Sans',sans-serif;letter-spacing:.08em;}
+.reader-hint{justify-self:end;color:#765a36;font:500 .55rem 'DM Sans',sans-serif;letter-spacing:.11em;text-align:right;}
+
+@media(max-width:900px){.intro-panel{grid-template-columns:minmax(0,1.25fr) minmax(250px,.8fr);gap:14px;padding:16px}.intro-main{grid-template-columns:minmax(105px,.34fr) minmax(0,1fr);gap:16px;padding:14px}.chapter-panel{grid-template-columns:minmax(180px,.38fr) minmax(0,1fr);gap:12px;padding:16px}.chapter-rail{padding:18px}.reader-footer-brand{display:none}.reader-footer{grid-template-columns:1fr auto 1fr}.reader-hint{font-size:.48rem}}
+@media(max-width:650px){.reader-topbar{height:48px;padding:0 10px}.reader-brand{font-size:.52rem;letter-spacing:.12em}.reader-back{font-size:.56rem}.reader-counter{font-size:.5rem}.reader-viewport{inset:48px 0 62px}.intro-panel{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(0,.8fr);gap:9px;padding:10px}.intro-main{grid-template-columns:100px minmax(0,1fr);gap:12px;padding:12px}.intro-cover{height:145px;width:94px}.intro-copy h1{font-size:clamp(1.6rem,7vw,2.3rem)}.intro-synopsis{font-size:.85rem;line-height:1.35;margin-bottom:9px}.mission-facts{gap:5px 9px}.mission-facts dt{font-size:.48rem}.mission-facts dd{font-size:.68rem}.intro-direction{margin-top:8px;font-size:.75rem}.intro-toc{padding:10px 13px}.intro-toc h2{font-size:1.35rem;margin-bottom:6px}.intro-toc ol{max-height:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 8px}.intro-toc li button{grid-template-columns:22px 1fr 12px;padding:6px 3px;font-size:.68rem;gap:5px}.chapter-panel{grid-template-columns:110px minmax(0,1fr);gap:8px;padding:9px}.chapter-rail{padding:11px}.chapter-rail .page-kicker{font-size:.48rem;letter-spacing:.08em}.chapter-rail h2{font-size:1.55rem}.chapter-rail-caption{font-size:.75rem}.chapter-thumb{height:90px;margin-top:7px}.chapter-reading-surface{padding:8px}.chapter-reading-inner{padding:9px}.chapter-reading-inner h1{font-size:1.6rem}.chapter-body{font-size:.88rem;line-height:1.5}.equipment-list{grid-template-columns:1fr}.reader-footer{min-height:62px;grid-template-columns:1fr;justify-items:center;padding:5px}.reader-hint{display:none}.reader-controls{gap:6px}.reader-controls button{width:31px;height:29px}.panorama-message{width:90vw;padding:18px 13px;gap:9px}.panorama-moving-track{animation-duration:50s}}
+@media(prefers-reduced-motion:reduce){.panorama-moving-track{animation-duration:90s}.opening-cover,.panorama-message{animation-duration:.01ms!important}.reader-track{transition-duration:.01ms}}
+
+
+/* V10 reader polish: hairline bars with dark, soft edge fades. */
+.reader-topbar{
+  background:linear-gradient(180deg,rgba(8,7,6,.76) 0%,rgba(8,7,6,.42) 62%,rgba(8,7,6,0) 100%) !important;
+  border-bottom:1px solid rgba(255,255,255,.12) !important;
+  color:#f4ead7 !important;
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+}
+.reader-back,.reader-brand,.reader-counter{color:#f4ead7 !important;text-shadow:0 1px 5px rgba(0,0,0,.45);}
+.reader-footer{
+  background:linear-gradient(0deg,rgba(8,7,6,.82) 0%,rgba(8,7,6,.46) 64%,rgba(8,7,6,0) 100%) !important;
+  border-top:1px solid rgba(255,255,255,.12) !important;
+  color:#f4ead7 !important;
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+}
+.reader-footer-brand,.reader-hint,#page-indicator,.reader-controls{color:#f4ead7 !important;text-shadow:0 1px 5px rgba(0,0,0,.45);}
+.reader-controls button{border-color:rgba(255,245,225,.34) !important;background:rgba(255,255,255,.12) !important;color:#fff2dd !important;}
+.reader-controls button:hover:not(:disabled){background:rgba(255,255,255,.24) !important;}
+.reader-viewport{inset:54px 0 66px !important;}
+
+/* Full-height panoramic spreads: chapter title centred below the top hairline. */
+.chapter-panel{
+  grid-template-columns:minmax(0,1fr) !important;
+  grid-template-rows:auto minmax(0,1fr) !important;
+  gap:clamp(16px,2.4vh,28px) !important;
+  padding:clamp(18px,3vh,34px) clamp(18px,4vw,64px) !important;
+  background:transparent;
+}
+.chapter-heading{
+  grid-row:1;align-self:start;justify-self:center;width:min(1100px,100%);
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:clamp(8px,1.8vh,20px) 18px 0;
+  color:#f7ecd7;text-shadow:0 2px 12px rgba(0,0,0,.72);
+}
+.chapter-heading .page-kicker{margin:0 0 9px;color:#f0d6a7;font-size:.68rem;letter-spacing:.2em;}
+.chapter-heading h2{margin:0 0 10px;color:#fff3df;font:500 clamp(2rem,4.2vw,4.2rem)/.98 'Cormorant Garamond',serif;text-shadow:0 3px 16px rgba(0,0,0,.75);}
+.chapter-heading .chapter-rail-rule{color:#f0d6a7;letter-spacing:.18em;}
+.chapter-heading .chapter-rail-caption{margin:8px 0 0;color:#f4e5cc;font:italic clamp(.92rem,1.4vw,1.12rem)/1.35 'Cormorant Garamond',serif;}
+.chapter-reading-surface{
+  grid-row:2;align-self:stretch;min-height:0;width:min(1500px,100%);margin:0 auto;
+  display:grid;grid-template-columns:minmax(190px,.32fr) minmax(0,1fr);align-items:stretch;gap:clamp(16px,2.5vw,34px);
+  padding:clamp(16px,2.2vw,30px);
+  background:linear-gradient(110deg,rgba(248,241,224,.93),rgba(248,241,224,.86));
+  border:1px solid rgba(117,88,53,.4);box-shadow:0 18px 48px rgba(20,14,9,.25),inset 0 0 0 5px rgba(255,255,255,.2);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.chapter-landscape{width:100%;height:100%;min-height:0;max-height:100%;object-fit:cover;border:1px solid rgba(117,88,53,.35);box-shadow:0 8px 24px rgba(69,49,28,.18);}
+.chapter-reading-inner{width:100%;max-width:1100px;max-height:100%;min-height:0;overflow-y:auto;align-self:center;padding:clamp(10px,1.6vw,22px) clamp(12px,2vw,28px);}
+.chapter-reading-inner h1{font-size:clamp(1.8rem,3.3vw,3.4rem);}
+.chapter-body{font-size:clamp(1.02rem,1.42vw,1.22rem);line-height:1.78;}
+
+/* Slightly enlarge the mission cover without crowding its synopsis. */
+.intro-main{grid-template-columns:minmax(170px,.44fr) minmax(0,1fr) !important;}
+.intro-cover{width:min(100%,245px) !important;height:clamp(190px,38vh,330px) !important;}
+.intro-panel{min-height:100%;align-items:stretch;}
+
+@media(max-width:900px){
+  .chapter-panel{padding:14px !important;gap:12px !important;}
+  .chapter-reading-surface{grid-template-columns:minmax(130px,.34fr) minmax(0,1fr);gap:12px;padding:12px;}
+  .intro-main{grid-template-columns:minmax(135px,.4fr) minmax(0,1fr) !important;}
+}
+@media(max-width:650px){
+  .reader-viewport{inset:48px 0 62px !important;}
+  .chapter-panel{padding:10px !important;grid-template-rows:auto minmax(0,1fr) !important;gap:10px !important;}
+  .chapter-heading{padding-top:5px;}
+  .chapter-heading h2{font-size:clamp(1.6rem,7vw,2.5rem);}
+  .chapter-reading-surface{grid-template-columns:1fr;grid-template-rows:minmax(90px,.32fr) minmax(0,1fr);gap:9px;padding:9px;}
+  .chapter-landscape{max-height:22vh;min-height:90px;}
+  .chapter-reading-inner{padding:8px 10px;}
+  .chapter-body{font-size:.95rem;line-height:1.58;}
+  .intro-main{grid-template-columns:115px minmax(0,1fr) !important;}
+  .intro-cover{width:110px !important;height:165px !important;}
 }
 
-@keyframes pageIn{
-    from{
-        opacity:0;
-        transform:translateX(24px)
-    } to{
-        opacity:1;transform:translateX(0)
-    }
+/* Reader refinement: quiet hairline fades, full-bleed spreads, and a chapter title that docks as a small nav label. */
+.reader-topbar{border-bottom:0!important;background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.08) 58%,transparent)!important;}
+.reader-footer{border-top:0!important;background:linear-gradient(0deg,rgba(0,0,0,.29),rgba(0,0,0,.08) 58%,transparent)!important;}
+.reader-topbar,.reader-footer{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.reader-topbar:after,.reader-footer:before{content:"";position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.07);pointer-events:none;}
+.reader-topbar:after{bottom:0}.reader-footer:before{top:0}
+.intro-panel{padding:clamp(14px,2.6vh,28px) clamp(18px,3vw,44px)!important;}
+.intro-cover{width:min(100%,230px)!important;height:clamp(175px,36vh,320px)!important;}
+.chapter-panel{position:relative;display:block!important;padding:0!important;}
+.chapter-heading{position:absolute;z-index:4;left:clamp(22px,4vw,64px);top:50%;width:min(28vw,360px);padding:0!important;margin:0!important;background:transparent!important;border:0!important;box-shadow:none!important;transform:translateY(-50%);transition:left .82s cubic-bezier(.2,.72,.18,1),top .82s cubic-bezier(.2,.72,.18,1),width .82s ease,transform .82s ease;}
+.chapter-heading .page-kicker,.chapter-heading .chapter-rail-rule,.chapter-heading .chapter-rail-caption{transition:opacity .35s ease;}
+.chapter-heading h2{margin:0!important;color:#fff3df!important;font-size:clamp(2rem,4vw,4rem)!important;line-height:1.04!important;text-shadow:0 3px 18px rgba(0,0,0,.72)!important;transition:font-size .82s ease,text-align .82s ease;}
+.chapter-reading-surface{position:absolute!important;left:clamp(320px,34vw,470px);right:clamp(22px,4vw,64px);top:9%;bottom:9%;width:auto!important;height:auto!important;min-height:0!important;padding:clamp(18px,3vw,42px)!important;background:rgba(248,241,224,.90)!important;border:0!important;outline:0!important;box-shadow:0 16px 48px rgba(0,0,0,.15)!important;}
+.chapter-landscape{border:0!important;box-shadow:none!important;}
+.chapter-reading-inner{max-width:1120px!important;}
+.chapter-panel.chapter-title-docked .chapter-heading{left:50%;top:14px;width:min(72vw,760px);transform:translateX(-50%);text-align:center;}
+.chapter-panel.chapter-title-docked .chapter-heading h2{font-size:clamp(.95rem,1.45vw,1.2rem)!important;letter-spacing:.12em;text-transform:uppercase;}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption{opacity:0;pointer-events:none;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{left:clamp(20px,4vw,64px);right:clamp(20px,4vw,64px);top:70px;bottom:12px;}
+@media(max-width:900px){.chapter-heading{width:26vw;left:18px}.chapter-reading-surface{left:29vw;right:18px;top:8%;bottom:8%;padding:12px!important}.chapter-panel.chapter-title-docked .chapter-reading-surface{left:16px;right:16px;top:62px;bottom:10px}}
+@media(max-width:650px){.chapter-heading{left:14px;top:12px;width:calc(100% - 28px);transform:none;text-align:center}.chapter-heading h2{font-size:1.35rem!important}.chapter-reading-surface{left:10px;right:10px;top:74px;bottom:8px;padding:8px!important}.chapter-panel.chapter-title-docked .chapter-heading{left:50%;top:8px;width:90%;transform:translateX(-50%)}.chapter-panel.chapter-title-docked .chapter-reading-surface{left:8px;right:8px;top:54px;bottom:8px}}
+
+
+/* V12 — full-bleed panoramic book pages. Top/bottom controls remain, their bars disappear. */
+.reader-topbar,.reader-footer{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.reader-topbar:after,.reader-footer:before{display:none!important;}
+.reader-viewport{inset:54px 0 66px!important;}
+.reader-panel{background:transparent!important;}
+.chapter-panel{position:relative!important;display:block!important;padding:0!important;overflow:hidden!important;}
+/* Chapter title starts as the large left-side chapter marker. */
+.chapter-heading{left:clamp(24px,5vw,76px)!important;top:50%!important;width:min(30vw,390px)!important;transform:translateY(-50%)!important;text-align:left!important;align-items:flex-start!important;z-index:5!important;}
+.chapter-heading h2{font-size:clamp(2.25rem,4.5vw,4.8rem)!important;line-height:1.02!important;text-align:left!important;max-width:100%!important;}
+.chapter-reading-surface{position:absolute!important;inset:0!important;left:0!important;right:0!important;top:0!important;bottom:0!important;width:100%!important;height:100%!important;display:block!important;padding:0!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.chapter-landscape{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;max-height:none!important;object-fit:cover!important;border:0!important;box-shadow:none!important;opacity:.52;filter:saturate(.82) sepia(.12);}
+.chapter-reading-surface:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(30,23,16,.48),rgba(30,23,16,.16) 42%,rgba(30,23,16,.42));pointer-events:none;}
+.chapter-reading-inner{position:absolute!important;z-index:2;left:clamp(340px,39vw,560px)!important;right:clamp(28px,5vw,78px)!important;top:7%!important;bottom:7%!important;width:auto!important;max-width:none!important;max-height:none!important;overflow-y:auto!important;align-self:stretch!important;padding:clamp(22px,3.5vw,54px)!important;background:rgba(248,241,224,.88)!important;color:#332719!important;border:0!important;box-shadow:none!important;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);}
+.chapter-reading-inner h1{color:#352719!important;font-size:clamp(1.8rem,3vw,3.1rem)!important;}
+.chapter-body{color:#3c3022!important;font-size:clamp(1.02rem,1.42vw,1.24rem)!important;line-height:1.8!important;}
+/* After the horizontal page-turn begins, only the chapter title docks as a readable nav label. */
+.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;top:12px!important;width:min(76vw,900px)!important;transform:translateX(-50%)!important;align-items:center!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-heading h2{font-size:clamp(1.05rem,1.55vw,1.35rem)!important;line-height:1.2!important;letter-spacing:.08em!important;text-align:center!important;text-shadow:0 2px 9px rgba(0,0,0,.9)!important;}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption{opacity:0!important;pointer-events:none!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{left:clamp(28px,5vw,78px)!important;right:clamp(28px,5vw,78px)!important;top:58px!important;bottom:7%!important;}
+@media(max-width:900px){.chapter-heading{width:28vw!important;left:20px!important}.chapter-reading-inner{left:32vw!important;right:18px!important;padding:18px!important;}}
+@media(max-width:650px){.reader-viewport{inset:48px 0 62px!important}.chapter-heading{left:16px!important;top:12px!important;width:calc(100% - 32px)!important;transform:none!important;align-items:center!important;text-align:center!important}.chapter-heading h2{font-size:1.5rem!important;text-align:center!important}.chapter-reading-inner{left:10px!important;right:10px!important;top:76px!important;bottom:10px!important;padding:14px!important}.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;top:7px!important;width:90%!important}.chapter-panel.chapter-title-docked .chapter-reading-inner{left:8px!important;right:8px!important;top:48px!important;bottom:8px!important;}}
+
+/* V13 refinements: stable arrow swap, continuous panoramic reader and full-bleed photo cards. */
+.glass-select-chevron{position:relative!important;display:inline-block!important;width:14px;height:18px;flex:0 0 14px;vertical-align:middle;transform:none!important;}
+.glass-select-chevron i{position:absolute;inset:0;display:grid;place-items:center;font-style:normal;font-size:1rem;line-height:18px;transition:opacity .2s ease,transform .2s ease;}
+.glass-select-chevron .arrow-down{opacity:1;transform:translateY(0)}
+.glass-select-chevron .arrow-up{opacity:0;transform:translateY(2px)}
+.glass-select-wrap.is-open .glass-select-chevron .arrow-down{opacity:0;transform:translateY(-2px)}
+.glass-select-wrap.is-open .glass-select-chevron .arrow-up{opacity:1;transform:translateY(0)}
+.reader-topbar{height:58px!important;grid-template-columns:1fr minmax(0,2fr) 1fr!important;background:linear-gradient(180deg,rgba(0,0,0,.36),rgba(0,0,0,.13) 72%,transparent)!important;border:0!important;}
+.reader-brand{max-width:60vw;overflow:hidden;text-overflow:ellipsis;color:#fff4df!important;text-shadow:0 2px 8px rgba(0,0,0,.75);letter-spacing:.1em!important;}
+.reader-back,.reader-counter{color:#fff4df!important;text-shadow:0 2px 8px rgba(0,0,0,.8);font-weight:700!important;}
+.reader-viewport{inset:58px 0 70px!important;}
+.reader-footer{min-height:70px!important;background:linear-gradient(0deg,rgba(0,0,0,.4),rgba(0,0,0,.13) 72%,transparent)!important;border:0!important;}
+.reader-footer-brand,.reader-hint,#page-indicator,.reader-controls{color:#fff4df!important;text-shadow:0 2px 8px rgba(0,0,0,.8);font-weight:700!important;}
+.immersive-reader,.reader-panel{background:#d9c9a8!important;}
+.reader-panorama-backdrop{background:linear-gradient(120deg,#e9ddc5,#d9c9a8 50%,#e7d8bb)!important;}
+.reader-panorama-backdrop:after{background:linear-gradient(90deg,rgba(237,224,197,.18),rgba(245,237,218,.08) 48%,rgba(237,224,197,.18))!important;}
+.reader-panel{opacity:1!important;}
+.chapter-heading{left:clamp(26px,5vw,82px)!important;top:50%!important;width:min(30vw,400px)!important;transform:translateY(-50%)!important;text-align:left!important;}
+.chapter-heading h2{font-size:clamp(2.2rem,4.6vw,4.8rem)!important;line-height:1.02!important;text-align:left!important;}
+.chapter-reading-surface{inset:0!important;left:0!important;right:0!important;top:0!important;bottom:0!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;}
+.chapter-reading-inner{position:absolute!important;z-index:2;left:clamp(350px,40vw,570px)!important;right:clamp(28px,5vw,78px)!important;top:6%!important;bottom:6%!important;max-width:none!important;max-height:none!important;overflow-y:auto!important;padding:clamp(24px,3.4vw,54px)!important;background:rgba(248,241,224,.96)!important;color:#332719!important;border:0!important;box-shadow:0 12px 36px rgba(57,39,20,.12)!important;}
+.chapter-reading-inner h1{color:#352719!important;}
+.chapter-photo-card{float:right;width:clamp(180px,27%,330px);margin:0 0 20px 24px;padding:9px 9px 7px;background:#fffdf7;box-shadow:0 7px 22px rgba(55,40,24,.2);transform:rotate(.4deg);}
+.chapter-photo-card img{display:block;width:100%;height:clamp(120px,22vh,220px);object-fit:cover;}
+.chapter-photo-card figcaption{padding:8px 3px 2px;color:#66543d;text-align:center;font:italic .9rem 'Cormorant Garamond',serif;line-height:1.25;}
+.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;top:12px!important;width:min(76vw,900px)!important;transform:translateX(-50%)!important;text-align:center!important;align-items:center!important;}
+.chapter-panel.chapter-title-docked .chapter-heading h2{font-size:clamp(1.25rem,1.8vw,1.65rem)!important;line-height:1.25!important;text-align:center!important;letter-spacing:.05em!important;}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption{opacity:0!important;pointer-events:none!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{left:clamp(28px,5vw,78px)!important;right:clamp(28px,5vw,78px)!important;top:76px!important;bottom:6%!important;}
+.intro-panel{padding:clamp(18px,3vh,36px) clamp(22px,4vw,64px)!important;}
+@media(max-width:900px){.chapter-reading-inner{left:34vw!important;right:18px!important;padding:20px!important}.chapter-photo-card{width:35%;margin-left:16px}}
+@media(max-width:650px){.reader-topbar{height:50px!important}.reader-viewport{inset:50px 0 62px!important}.reader-footer{min-height:62px!important}.chapter-heading{left:16px!important;top:12px!important;width:calc(100% - 32px)!important;transform:none!important;text-align:center!important}.chapter-heading h2{font-size:1.6rem!important;text-align:center!important}.chapter-reading-inner{left:10px!important;right:10px!important;top:78px!important;bottom:8px!important;padding:14px!important}.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;top:6px!important;width:90%!important}.chapter-panel.chapter-title-docked .chapter-reading-inner{left:8px!important;right:8px!important;top:58px!important;bottom:8px!important}.chapter-photo-card{float:none;width:min(100%,300px);margin:0 auto 18px}.chapter-photo-card img{height:150px}}
+
+/* V15: slower, deliberate right-to-left cover opening; panoramic scroll is unchanged. */
+.opening-cover{animation-duration:2.9s!important;animation-delay:0s!important;}
+
+/* V15: hold the right-hand cover open for nearly three seconds, then reveal
+   the existing panoramic layer. Its horizontal scroll speed and direction stay unchanged. */
+.opening-cover{animation-duration:2.9s!important;animation-delay:0s!important;}
+@keyframes v15PanoramaReveal{from{opacity:0}to{opacity:1}}
+.opening-panorama{opacity:0!important;animation:v15PanoramaReveal .55s ease 2.9s forwards!important;}
+.panorama-message{opacity:0!important;animation:messageReveal .85s ease 3.05s forwards!important;}
+.book-opening-overlay.book-opening-complete{transition-delay:2.9s!important;}
+
+
+/* V16: left-to-right book opening. The cover begins on the left and swings away to the right. */
+.opening-cover{
+  inset:0 auto 0 0!important;
+  width:50.2%!important;
+  transform-origin:left center!important;
+  border:2px solid #c09a62!important;
+  border-right:0!important;
+  border-radius:5px 0 0 5px!important;
+  box-shadow:inset 7px 0 12px rgba(255,255,255,.12),inset -5px 0 9px rgba(0,0,0,.32),-8px 0 30px rgba(0,0,0,.3)!important;
+  animation:v16CoverOpenRight 2.9s cubic-bezier(.18,.72,.2,1) 0s both!important;
+}
+@keyframes v16CoverOpenRight{
+  0%{transform:perspective(1800px) rotateY(0deg)}
+  72%{transform:perspective(1800px) rotateY(-158deg)}
+  100%{transform:perspective(1800px) rotateY(-180deg)}
 }
 
-@keyframes bookOpen{
-    0%{
-        transform:rotateY(0) scale(1);
-        opacity:1
-    } 55%{
-        transform:rotateY(-75deg) scale(1.06);
-        opacity:.8
-    } 100%{
-        transform:rotateY(-95deg) scale(.92);
-        opacity:0
-    }
+/* The reader itself is a single full-viewport panorama: no separate header/footer bands. */
+.immersive-reader{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;}
+.reader-topbar,.reader-footer{display:none!important;}
+.reader-viewport{position:absolute!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;}
+.reader-track{height:100%!important;}
+.reader-panel{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;}
+.intro-panel{min-height:100dvh!important;height:100dvh!important;box-sizing:border-box!important;align-content:center!important;padding:clamp(18px,4vh,46px) clamp(18px,4vw,64px)!important;}
+.chapter-panel{min-height:100dvh!important;height:100dvh!important;}
+.chapter-heading{top:50%!important;}
+.chapter-reading-inner{top:5%!important;bottom:5%!important;max-height:90%!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{top:12%!important;bottom:5%!important;}
+@media(max-width:650px){
+  .reader-viewport{inset:0!important;height:100dvh!important;}
+  .intro-panel{height:100dvh!important;min-height:100dvh!important;padding:14px!important;}
+  .chapter-panel{height:100dvh!important;min-height:100dvh!important;}
+  .chapter-reading-inner{top:78px!important;bottom:14px!important;max-height:none!important;}
+  .chapter-panel.chapter-title-docked .chapter-reading-inner{top:58px!important;bottom:12px!important;}
 }
 
-.page-enter{
-    animation:pageIn .32s ease both
+/* V17: cover remains on the right and opens left-to-right across the spread; panoramic layer follows unchanged. */
+.opening-cover{
+  inset:0 0 0 auto!important;
+  width:50.2%!important;
+  transform-origin:right center!important;
+  border:2px solid #c09a62!important;
+  border-left:0!important;
+  border-right:2px solid #c09a62!important;
+  border-radius:0 5px 5px 0!important;
+  animation:spaceboundCoverOpenLeft 2.9s cubic-bezier(.18,.72,.2,1) 0s both!important;
+  backface-visibility:hidden!important;
+}
+@keyframes spaceboundCoverOpenLeft{
+  0%{transform:perspective(1800px) rotateY(0deg)}
+  72%{transform:perspective(1800px) rotateY(158deg)}
+  100%{transform:perspective(1800px) rotateY(180deg)}
+}
+/* Keep the established panoramic scroll intact; reveal it only after the cover has opened. */
+.opening-panorama{animation:v17PanoramaReveal .55s ease 2.9s both!important;}
+@keyframes v17PanoramaReveal{from{opacity:0}to{opacity:1}}
+
+/* V17 reader chrome: top and bottom controls sit over the full-bleed reading spread. */
+.immersive-reader{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;}
+.reader-topbar{display:grid!important;position:absolute!important;z-index:40!important;top:0!important;left:0!important;right:0!important;height:58px!important;grid-template-columns:1fr minmax(0,2fr) 1fr!important;align-items:center!important;padding:0 clamp(16px,3vw,42px)!important;background:linear-gradient(180deg,rgba(20,16,12,.56),rgba(20,16,12,.2) 68%,transparent)!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.reader-back,.reader-brand,.reader-counter{color:#fff4df!important;text-shadow:0 2px 8px rgba(0,0,0,.85)!important;font-weight:600!important;}
+.reader-back{justify-self:start!important;font-size:.72rem!important;letter-spacing:.1em!important;}
+.reader-brand{justify-self:center!important;max-width:60vw!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:.78rem!important;letter-spacing:.12em!important;}
+.reader-counter{justify-self:end!important;font-size:.68rem!important;white-space:nowrap!important;}
+.reader-viewport{position:absolute!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;}
+.reader-track{height:100%!important;}
+.reader-panel{height:100dvh!important;min-height:100dvh!important;box-sizing:border-box!important;}
+.reader-footer{display:grid!important;position:absolute!important;z-index:40!important;left:0!important;right:0!important;bottom:0!important;min-height:66px!important;grid-template-columns:1fr auto 1fr!important;align-items:center!important;padding:8px clamp(16px,3vw,42px)!important;background:linear-gradient(0deg,rgba(20,16,12,.58),rgba(20,16,12,.2) 68%,transparent)!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.reader-footer-brand,.reader-hint,#page-indicator,.reader-controls{color:#fff4df!important;text-shadow:0 2px 8px rgba(0,0,0,.88)!important;font-weight:600!important;}
+.reader-footer-brand{justify-self:start!important;font-size:.58rem!important;letter-spacing:.12em!important;}
+.reader-controls{justify-self:center!important;display:flex!important;align-items:center!important;gap:9px!important;}
+.reader-controls button{width:36px!important;height:34px!important;border:1px solid rgba(255,244,223,.4)!important;border-radius:5px!important;background:rgba(255,255,255,.12)!important;color:#fff4df!important;}
+.reader-hint{justify-self:end!important;font-size:.55rem!important;letter-spacing:.09em!important;}
+/* Full-bleed page content between the floating top and bottom controls. */
+.reader-panorama-backdrop{position:absolute!important;inset:0!important;background:#d9c9a8!important;}
+.reader-panorama-backdrop:after{opacity:.18!important;}
+.intro-panel{height:100dvh!important;min-height:100dvh!important;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr)!important;gap:clamp(22px,4vw,64px)!important;padding:clamp(76px,10vh,104px) clamp(24px,5vw,76px) clamp(82px,10vh,108px)!important;background:transparent!important;}
+.intro-main,.intro-toc{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:clamp(12px,2vw,28px)!important;}
+.intro-cover{width:min(100%,230px)!important;height:clamp(190px,38vh,340px)!important;}
+.chapter-panel{height:100dvh!important;min-height:100dvh!important;grid-template-columns:minmax(240px,.42fr) minmax(0,1fr)!important;gap:clamp(24px,4vw,64px)!important;padding:clamp(76px,10vh,104px) clamp(24px,5vw,76px) clamp(82px,10vh,108px)!important;background:transparent!important;}
+.chapter-rail{background:rgba(74,49,29,.86)!important;border:0!important;box-shadow:none!important;}
+.chapter-reading-surface{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0!important;align-items:stretch!important;}
+.chapter-reading-inner{width:100%!important;max-width:none!important;max-height:100%!important;padding:clamp(22px,3.2vw,48px)!important;background:rgba(248,241,224,.94)!important;border:0!important;box-shadow:none!important;}
+.chapter-panel.chapter-title-docked{grid-template-columns:1fr!important;}
+.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;top:70px!important;width:min(76vw,1000px)!important;transform:translateX(-50%)!important;align-items:center!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-heading h2{font-size:clamp(1.35rem,2vw,1.8rem)!important;line-height:1.2!important;letter-spacing:.04em!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{left:clamp(28px,5vw,78px)!important;right:clamp(28px,5vw,78px)!important;top:132px!important;bottom:clamp(78px,10vh,108px)!important;}
+@media(max-width:800px){
+ .reader-topbar{height:52px!important;padding:0 12px!important;}
+ .reader-brand{font-size:.62rem!important;max-width:52vw!important;}
+ .reader-footer{min-height:60px!important;grid-template-columns:1fr auto!important;padding:6px 10px!important;}
+ .reader-footer-brand{display:none!important;}
+ .reader-hint{display:none!important;}
+ .reader-viewport{height:100dvh!important;}
+ .intro-panel{grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) minmax(0,.8fr)!important;padding:64px 14px 70px!important;gap:8px!important;}
+ .intro-main{grid-template-columns:110px minmax(0,1fr)!important;padding:8px!important;gap:12px!important;}
+ .intro-cover{width:100px!important;height:145px!important;}
+ .intro-toc{padding:8px!important;}
+ .chapter-panel{grid-template-columns: minmax(150px,.38fr) minmax(0,1fr)!important;padding:64px 12px 70px!important;gap:10px!important;}
+ .chapter-rail{padding:14px!important;}
+ .chapter-reading-inner{padding:14px!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading{top:58px!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-surface{left:12px!important;right:12px!important;top:106px!important;bottom:70px!important;}
 }
 
-.book-opening{
-    transform-origin:left center;
-    animation:bookOpen .52s ease-in forwards;
-    z-index:10;
-    perspective:800px
+/* V17 opening: the cover sits on the right and swings open toward the left. */
+.opening-cover{
+  inset:0 0 0 auto!important;
+  width:50.2%!important;
+  transform-origin:right center!important;
+  border:2px solid #c09a62!important;
+  border-left:0!important;
+  border-right:2px solid #c09a62!important;
+  border-radius:0 5px 5px 0!important;
+  animation:spaceboundCoverOpenFromRight 2.9s cubic-bezier(.18,.72,.2,1) 0s both!important;
+  backface-visibility:hidden!important;
+}
+@keyframes spaceboundCoverOpenFromRight{
+  0%{transform:perspective(1800px) rotateY(0deg)}
+  72%{transform:perspective(1800px) rotateY(158deg)}
+  100%{transform:perspective(1800px) rotateY(180deg)}
+}
+.opening-panorama{opacity:0!important;animation:spaceboundPanoramaReveal .55s ease 2.9s forwards!important;}
+@keyframes spaceboundPanoramaReveal{from{opacity:0}to{opacity:1}}
+.panorama-art{background:linear-gradient(180deg,#d8c6a5 0%,#e9dcc1 42%,#cbb58e 43%,#a58b63 100%);position:relative;overflow:hidden;}
+.panorama-art:before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 18% 52%,rgba(91,111,94,.45) 0 13%,transparent 13.5%),radial-gradient(ellipse at 44% 48%,rgba(106,119,91,.4) 0 18%,transparent 18.5%),radial-gradient(ellipse at 76% 50%,rgba(88,106,87,.42) 0 16%,transparent 16.5%),linear-gradient(165deg,transparent 0 48%,rgba(248,239,216,.55) 48.5% 50%,transparent 50.5%);}
+.panorama-art:after{content:"";position:absolute;left:0;right:0;bottom:0;height:35%;background:repeating-linear-gradient(0deg,rgba(91,69,43,.08) 0 2px,transparent 2px 18px),linear-gradient(180deg,transparent,rgba(80,60,37,.2));}
+.panorama-art-two{transform:scaleX(-1);}
+
+/* V17: visible top and bottom navigation bands over a full-bleed reading spread. */
+.reader-topbar{display:grid!important;position:absolute!important;z-index:40!important;top:0!important;left:0!important;right:0!important;height:60px!important;grid-template-columns:1fr minmax(0,2fr) 1fr!important;align-items:center!important;padding:0 clamp(16px,3vw,42px)!important;background:linear-gradient(180deg,rgba(17,13,10,.58),rgba(17,13,10,.2) 72%,transparent)!important;border:0!important;box-shadow:none!important;}
+.reader-back,.reader-brand,.reader-counter{color:#fff3dc!important;text-shadow:0 2px 8px rgba(0,0,0,.9)!important;font-weight:600!important;}
+.reader-back{justify-self:start!important;font-size:.72rem!important;letter-spacing:.1em!important;}
+.reader-brand{justify-self:center!important;max-width:62vw!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:.78rem!important;letter-spacing:.1em!important;}
+.reader-counter{justify-self:end!important;font-size:.68rem!important;white-space:nowrap!important;}
+.reader-viewport{position:absolute!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;}
+.reader-track{height:100%!important;}
+.reader-panel{height:100dvh!important;min-height:100dvh!important;box-sizing:border-box!important;}
+.reader-footer{display:grid!important;position:absolute!important;z-index:40!important;left:0!important;right:0!important;bottom:0!important;min-height:66px!important;grid-template-columns:1fr auto 1fr!important;align-items:center!important;padding:8px clamp(16px,3vw,42px)!important;background:linear-gradient(0deg,rgba(17,13,10,.6),rgba(17,13,10,.2) 72%,transparent)!important;border:0!important;box-shadow:none!important;}
+.reader-footer-brand,.reader-hint,#page-indicator,.reader-controls{color:#fff3dc!important;text-shadow:0 2px 8px rgba(0,0,0,.9)!important;font-weight:600!important;}
+.reader-footer-brand{justify-self:start!important;font-size:.58rem!important;letter-spacing:.12em!important;}
+.reader-controls{justify-self:center!important;display:flex!important;align-items:center!important;gap:9px!important;}
+.reader-controls button{width:36px!important;height:34px!important;border:1px solid rgba(255,243,220,.48)!important;border-radius:5px!important;background:rgba(255,255,255,.13)!important;color:#fff3dc!important;}
+.reader-hint{justify-self:end!important;font-size:.55rem!important;letter-spacing:.08em!important;}
+/* Every spread fills the viewport; the content is not boxed inside a page frame. */
+.intro-panel{height:100dvh!important;min-height:100dvh!important;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr)!important;gap:clamp(22px,4vw,64px)!important;padding:clamp(78px,10vh,108px) clamp(24px,5vw,76px) clamp(82px,10vh,110px)!important;background:transparent!important;}
+.intro-main,.intro-toc{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:clamp(12px,2vw,28px)!important;}
+.intro-cover{width:min(100%,230px)!important;height:clamp(190px,38vh,340px)!important;}
+.chapter-panel{height:100dvh!important;min-height:100dvh!important;grid-template-columns:minmax(240px,.42fr) minmax(0,1fr)!important;gap:clamp(24px,4vw,64px)!important;padding:clamp(78px,10vh,108px) clamp(24px,5vw,76px) clamp(82px,10vh,110px)!important;background:transparent!important;}
+.chapter-rail{background:rgba(75,49,29,.88)!important;border:0!important;box-shadow:none!important;}
+.chapter-reading-surface{background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:0!important;align-items:stretch!important;}
+.chapter-reading-inner{width:100%!important;max-width:none!important;max-height:100%!important;padding:clamp(22px,3.2vw,48px)!important;background:rgba(248,241,224,.94)!important;border:0!important;box-shadow:none!important;}
+/* A chapter's opening page retains its left-side title rail. Continuation pages dock only the title at centre. */
+.chapter-panel.chapter-title-docked{grid-template-columns:1fr!important;}
+.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;top:72px!important;width:min(76vw,1000px)!important;transform:translateX(-50%)!important;align-items:center!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-heading h2{font-size:clamp(1.35rem,2vw,1.8rem)!important;line-height:1.2!important;letter-spacing:.04em!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{left:clamp(28px,5vw,78px)!important;right:clamp(28px,5vw,78px)!important;top:136px!important;bottom:clamp(78px,10vh,110px)!important;}
+@media(max-width:800px){
+ .reader-topbar{height:52px!important;padding:0 12px!important;}
+ .reader-brand{font-size:.62rem!important;max-width:52vw!important;}
+ .reader-footer{min-height:60px!important;grid-template-columns:1fr auto!important;padding:6px 10px!important;}
+ .reader-footer-brand,.reader-hint{display:none!important;}
+ .reader-viewport{height:100dvh!important;}
+ .intro-panel{grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) minmax(0,.8fr)!important;padding:64px 14px 70px!important;gap:8px!important;}
+ .intro-main{grid-template-columns:110px minmax(0,1fr)!important;padding:8px!important;gap:12px!important;}
+ .intro-cover{width:100px!important;height:145px!important;}
+ .intro-toc{padding:8px!important;}
+ .chapter-panel{grid-template-columns:minmax(150px,.38fr) minmax(0,1fr)!important;padding:64px 12px 70px!important;gap:10px!important;}
+ .chapter-rail{padding:14px!important;}
+ .chapter-reading-inner{padding:14px!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading{top:58px!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-surface{left:12px!important;right:12px!important;top:112px!important;bottom:70px!important;}
 }
 
-@media(
-    prefers-reduced-motion:reduce
-)
-    
-{
-    *,*::before,*::after{
-        animation-duration:.01ms !important;
-        transition-duration:.01ms !important;
-        scroll-behavior:auto !important
-    }
+
+/* V18 — continuous, eased horizontal reading transitions. */
+.reader-track{
+  transition:transform 1.18s cubic-bezier(.22,.61,.36,1)!important;
+  will-change:transform;
+}
+.reader-panel.enter-from-right,.reader-panel.enter-from-left{
+  animation:readerPanelSoftReveal .9s ease both!important;
+}
+@keyframes readerPanelSoftReveal{
+  from{opacity:.72;filter:blur(1.5px)}
+  to{opacity:1;filter:blur(0)}
+}
+.reader-topbar{
+  background:linear-gradient(180deg,rgba(17,13,10,.34),rgba(17,13,10,.11) 70%,transparent)!important;
+}
+.reader-footer{
+  background:linear-gradient(0deg,rgba(17,13,10,.38),rgba(17,13,10,.12) 70%,transparent)!important;
+}
+/* The cover remains on the right and folds away to the left before the panorama appears. */
+.opening-cover{
+  inset:0 0 0 auto!important;
+  width:50.2%!important;
+  transform-origin:right center!important;
+  animation:spaceboundCoverOpenRightToLeft 2.9s cubic-bezier(.18,.72,.2,1) 0s both!important;
+}
+@keyframes spaceboundCoverOpenRightToLeft{
+  0%{transform:perspective(1800px) rotateY(0deg)}
+  72%{transform:perspective(1800px) rotateY(158deg)}
+  100%{transform:perspective(1800px) rotateY(180deg)}
+}
+.opening-panorama{
+  opacity:0!important;
+  animation:spaceboundPanoramaReveal .65s ease 2.9s forwards!important;
+}
+/* Continuation pages: centred, unboxed reading content with a clear gap below the mission title. */
+.chapter-panel.chapter-title-docked .chapter-heading{
+  top:78px!important;
+  width:min(76vw,1000px)!important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2{
+  font-size:clamp(1.2rem,1.8vw,1.55rem)!important;
+  line-height:1.25!important;
+  letter-spacing:.035em!important;
+  color:#493522!important;
+  text-shadow:0 1px 3px rgba(255,248,232,.55)!important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{
+  left:0!important;
+  right:0!important;
+  top:142px!important;
+  bottom:8%!important;
+  width:min(82vw,1320px)!important;
+  max-width:1320px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  color:#3c3022!important;
+  text-align:left!important;
+  overflow-y:auto!important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-inner h1{
+  color:#3a2b1d!important;
+  margin-bottom:10px!important;
+}
+.chapter-panel.chapter-title-docked .chapter-body{
+  color:#3c3022!important;
+  font-size:clamp(1.08rem,1.5vw,1.3rem)!important;
+  line-height:1.85!important;
+}
+.chapter-panel.chapter-title-docked .chapter-photo-card{
+  align-self:center!important;
+  width:min( min(100%, 620px), 55vw)!important;
+  margin:0 auto 22px!important;
+}
+@media(max-width:800px){
+  .chapter-panel.chapter-title-docked .chapter-heading{top:62px!important;width:90vw!important;}
+  .chapter-panel.chapter-title-docked .chapter-reading-inner{top:118px!important;bottom:9%!important;width:90vw!important;padding:12px!important;}
+  .chapter-panel.chapter-title-docked .chapter-body{font-size:1rem!important;line-height:1.65!important;}
+}
+
+/* V19 — safe-area reader: content sits between the fixed top and bottom navigation. */
+.immersive-reader{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;overflow:hidden!important;background:#ddcba9!important;color:#392b1e!important;}
+.reader-panorama-backdrop{position:absolute!important;inset:0!important;background:#ddcba9!important;}
+.reader-panorama-backdrop:after{display:none!important;}
+.reader-topbar{height:58px!important;background:linear-gradient(180deg,rgba(35,25,16,.24),rgba(35,25,16,.07) 78%,transparent)!important;border:0!important;}
+.reader-footer{min-height:64px!important;background:linear-gradient(0deg,rgba(35,25,16,.27),rgba(35,25,16,.07) 78%,transparent)!important;border:0!important;}
+.reader-viewport{position:absolute!important;inset:58px 0 64px!important;width:100vw!important;height:auto!important;overflow:hidden!important;}
+.reader-track{position:absolute!important;inset:0 auto 0 0!important;height:100%!important;transition:transform 1.12s cubic-bezier(.22,.61,.36,1)!important;}
+.reader-panel{position:relative!important;flex:0 0 100vw!important;width:100vw!important;height:100%!important;min-height:0!important;max-height:100%!important;box-sizing:border-box!important;overflow:hidden!important;}
+
+/* Mission overview: unboxed, balanced columns, sized to the available reader area. */
+.intro-panel{display:grid!important;grid-template-columns:minmax(0,1.5fr) minmax(245px,.72fr)!important;align-items:stretch!important;gap:clamp(20px,3.2vw,48px)!important;padding:clamp(18px,3vh,30px) clamp(22px,4.2vw,64px)!important;background:transparent!important;}
+.intro-main,.intro-toc{min-width:0!important;min-height:0!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;padding:clamp(8px,1.2vw,18px)!important;}
+.intro-main{display:grid!important;grid-template-columns:minmax(130px,.34fr) minmax(0,1fr)!important;align-items:center!important;gap:clamp(18px,2.8vw,38px)!important;}
+.intro-cover{width:min(100%,235px)!important;height:clamp(175px,37vh,310px)!important;object-fit:cover!important;border:5px solid #f3ead8!important;outline:1px solid rgba(112,82,45,.45)!important;}
+.intro-copy{min-width:0!important;max-height:100%!important;}
+.intro-copy h1{font-size:clamp(2rem,3.35vw,3.65rem)!important;line-height:.98!important;overflow-wrap:normal!important;}
+.intro-synopsis{font-size:clamp(.95rem,1.22vw,1.16rem)!important;line-height:1.48!important;margin-bottom:clamp(8px,1.4vh,15px)!important;}
+.mission-facts{gap:6px 14px!important;}
+.mission-facts dd{font-size:clamp(.72rem,.9vw,.86rem)!important;}
+.intro-direction{margin-top:10px!important;font-size:clamp(.78rem,1vw,.92rem)!important;}
+.intro-toc{justify-content:center!important;padding-left:clamp(10px,1.5vw,22px)!important;}
+.intro-toc h2{font-size:clamp(1.45rem,2vw,2rem)!important;margin-bottom:10px!important;}
+.intro-toc ol{max-height:none!important;overflow:hidden!important;gap:0!important;}
+.intro-toc li button{padding:clamp(7px,1.1vh,11px) 5px!important;font-size:clamp(.72rem,.9vw,.86rem)!important;}
+
+/* Chapter-opening spread: brown chapter title panel on the left, unboxed text on the right. */
+.chapter-panel{display:block!important;padding:0!important;background:transparent!important;}
+.chapter-heading{position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:34%!important;box-sizing:border-box!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;padding:clamp(22px,4vw,62px)!important;margin:0!important;background:linear-gradient(90deg,rgba(73,53,32,.82),rgba(73,53,32,.68))!important;border:0!important;box-shadow:none!important;transform:none!important;text-align:left!important;z-index:3!important;}
+.chapter-heading .page-kicker{color:#e4c894!important;font-size:clamp(.55rem,.75vw,.72rem)!important;line-height:1.45!important;}
+.chapter-heading h2{color:#fff1d7!important;font-size:clamp(2rem,4vw,4.25rem)!important;line-height:1.02!important;text-shadow:0 2px 12px rgba(0,0,0,.28)!important;overflow-wrap:anywhere!important;}
+.chapter-heading .chapter-rail-rule{color:#d4b37c!important;}
+.chapter-heading .chapter-rail-caption{color:#f0dfc1!important;font-size:clamp(.85rem,1.1vw,1.05rem)!important;line-height:1.4!important;}
+.chapter-reading-surface{position:absolute!important;left:34%!important;right:0!important;top:0!important;bottom:0!important;display:flex!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:0!important;padding:clamp(20px,3.2vw,48px)!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:hidden!important;}
+.chapter-reading-inner{position:relative!important;inset:auto!important;width:min(100%,1180px)!important;max-width:1180px!important;max-height:100%!important;min-height:0!important;overflow:hidden!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:stretch!important;padding:clamp(8px,1.5vw,22px)!important;margin:auto!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#453522!important;font-size:calc(clamp(.9rem,1.12vw,1.12rem)*var(--reader-fit-scale,1))!important;}
+.chapter-reading-inner h1{margin:0 0 5px!important;color:#493522!important;font-size:calc(clamp(1.55rem,2.5vw,2.65rem)*var(--reader-fit-scale,1))!important;line-height:1.04!important;}
+.chapter-reading-inner>.intro-rule{margin:8px 0 12px!important;}
+.chapter-body{color:#4b3d2b!important;font-size:inherit!important;line-height:1.58!important;overflow-wrap:anywhere!important;}
+.chapter-body p{margin:0 0 .7em!important;}
+.chapter-photo-card{float:none!important;align-self:center!important;width:min(48%,470px)!important;max-width:470px!important;margin:0 auto 12px!important;padding:8px 8px 6px!important;background:#fffdf7!important;border:0!important;box-shadow:0 8px 24px rgba(57,39,20,.18)!important;transform:none!important;flex:0 0 auto!important;}
+.chapter-photo-card img{display:block!important;width:100%!important;height:clamp(105px,20vh,190px)!important;max-height:22vh!important;object-fit:cover!important;}
+.chapter-photo-card figcaption{padding:7px 3px 1px!important;color:#66543b!important;font:italic clamp(.72rem,.9vw,.9rem)/1.25 'Cormorant Garamond',serif!important;text-align:center!important;}
+
+/* Continuation sections keep the same clean content style, with only the chapter title centred below the mission title. */
+.chapter-panel.chapter-title-docked .chapter-heading{left:50%!important;right:auto!important;top:8px!important;bottom:auto!important;width:min(78vw,1000px)!important;height:auto!important;padding:0 10px!important;transform:translateX(-50%)!important;align-items:center!important;text-align:center!important;background:transparent!important;}
+.chapter-panel.chapter-title-docked .chapter-heading h2{color:#493522!important;font-size:clamp(1.15rem,1.65vw,1.55rem)!important;line-height:1.2!important;letter-spacing:.035em!important;text-align:center!important;text-shadow:none!important;}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption{display:none!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{left:0!important;right:0!important;top:54px!important;bottom:0!important;padding:clamp(18px,3vh,32px) clamp(5vw,8vw,120px)!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{width:min(100%,1280px)!important;max-width:1280px!important;align-items:center!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-inner h1{font-size:calc(clamp(1.45rem,2.35vw,2.4rem)*var(--reader-fit-scale,1))!important;text-align:center!important;}
+.chapter-panel.chapter-title-docked .chapter-body{width:min(100%,1120px)!important;text-align:left!important;font-size:calc(clamp(.92rem,1.12vw,1.14rem)*var(--reader-fit-scale,1))!important;line-height:1.62!important;}
+.chapter-panel.chapter-title-docked .chapter-photo-card{width:min(44%,450px)!important;margin:0 auto 12px!important;}
+
+/* No vertical scrolling anywhere in the reading experience. */
+.reader-viewport,.reader-track,.reader-panel,.intro-panel,.intro-main,.intro-toc,.chapter-panel,.chapter-reading-surface,.chapter-reading-inner,.intro-toc ol{overflow:hidden!important;}
+.reader-panel img{max-height:100%;}
+@media(max-width:900px){
+ .intro-panel{grid-template-columns:minmax(0,1.35fr) minmax(210px,.75fr)!important;gap:12px!important;padding:14px!important;}
+ .intro-main{grid-template-columns:110px minmax(0,1fr)!important;gap:12px!important;padding:6px!important;}
+ .intro-cover{width:105px!important;height:clamp(145px,30vh,230px)!important;}
+ .intro-copy h1{font-size:clamp(1.55rem,3.2vw,2.5rem)!important;}
+ .chapter-heading{width:32%!important;padding:20px!important;}
+ .chapter-reading-surface{left:32%!important;padding:14px!important;}
+}
+@media(max-width:650px){
+ .reader-topbar{height:48px!important;padding:0 10px!important;}
+ .reader-footer{min-height:58px!important;padding:5px 8px!important;}
+ .reader-viewport{inset:48px 0 58px!important;}
+ .reader-brand{max-width:45vw!important;font-size:.52rem!important;letter-spacing:.04em!important;}
+ .reader-back,.reader-counter{font-size:.52rem!important;}
+ .reader-footer-brand,.reader-hint{display:none!important;}
+ .intro-panel{grid-template-columns:1fr!important;grid-template-rows:minmax(0,1fr) minmax(0,.72fr)!important;gap:5px!important;padding:8px!important;}
+ .intro-main{grid-template-columns:82px minmax(0,1fr)!important;gap:9px!important;padding:2px!important;}
+ .intro-cover{width:78px!important;height:115px!important;border-width:3px!important;}
+ .intro-cover-caption{font-size:.42rem!important;}
+ .intro-copy h1{font-size:clamp(1.2rem,5.6vw,1.8rem)!important;}
+ .intro-synopsis{font-size:.72rem!important;line-height:1.28!important;margin-bottom:5px!important;}
+ .intro-rule{margin:5px 0 7px!important;}
+ .mission-facts{gap:3px 7px!important;}
+ .mission-facts dt{font-size:.42rem!important;}
+ .mission-facts dd{font-size:.57rem!important;}
+ .intro-direction{font-size:.62rem!important;margin-top:5px!important;}
+ .intro-toc{padding:2px 6px!important;}
+ .intro-toc h2{font-size:1rem!important;margin-bottom:3px!important;}
+ .intro-toc li button{padding:4px 2px!important;font-size:.56rem!important;}
+ .chapter-heading{width:29%!important;padding:12px!important;}
+ .chapter-heading h2{font-size:clamp(1.3rem,5vw,2rem)!important;}
+ .chapter-heading .chapter-rail-caption{font-size:.68rem!important;}
+ .chapter-reading-surface{left:29%!important;padding:8px!important;}
+ .chapter-reading-inner{padding:4px!important;}
+ .chapter-reading-inner h1{font-size:1.2rem!important;}
+ .chapter-body{font-size:.72rem!important;line-height:1.38!important;}
+ .chapter-photo-card{width:min(72%,260px)!important;padding:5px!important;margin-bottom:6px!important;}
+ .chapter-photo-card img{height:clamp(70px,14vh,115px)!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading{top:4px!important;width:88%!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading h2{font-size:.88rem!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-surface{left:0!important;right:0!important;top:34px!important;padding:8px 12px!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-inner h1{font-size:1.12rem!important;}
+ .chapter-panel.chapter-title-docked .chapter-body{font-size:.72rem!important;line-height:1.4!important;}
+ .chapter-panel.chapter-title-docked .chapter-photo-card{width:min(68%,250px)!important;}
+}
+
+/* V19 — a more dimensional book-cover turn, with the existing panoramic scroll revealed afterwards. */
+.book-opening-overlay{perspective:2200px!important;background:#ddcba9!important;}
+.opening-book{perspective:2200px!important;transform-style:preserve-3d!important;background:#ddcba9!important;}
+.opening-page-left{position:absolute!important;z-index:1!important;left:0!important;top:0!important;width:50%!important;height:100%!important;background:#ddcba9!important;box-shadow:inset -16px 0 24px rgba(64,45,25,.08)!important;}
+.opening-page-right{position:absolute!important;z-index:1!important;right:0!important;top:0!important;width:50%!important;height:100%!important;background:linear-gradient(90deg,#cdbb98,#e5d7bb 12%,#ddcba9 100%)!important;box-shadow:inset 12px 0 22px rgba(64,45,25,.12)!important;}
+.opening-cover{position:absolute!important;z-index:5!important;top:0!important;right:0!important;bottom:0!important;left:auto!important;width:50%!important;transform-origin:left center!important;transform-style:preserve-3d!important;background:linear-gradient(90deg,#402719 0%,#795039 14%,#a27651 52%,#71472e 100%)!important;border:0!important;border-left:3px solid rgba(45,27,16,.55)!important;border-right:0!important;border-radius:3px 0 0 3px!important;box-shadow:inset 12px 0 18px rgba(255,230,184,.16),inset -12px 0 22px rgba(0,0,0,.25),-12px 0 32px rgba(39,25,15,.3)!important;animation:spaceboundRealBookOpen 3s cubic-bezier(.42,0,.2,1) .08s both!important;backface-visibility:hidden!important;}
+.opening-cover:before{content:"THE SPACEBOUND LIBRARY"!important;position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;color:#ead4a8!important;font:600 clamp(.65rem,1.5vw,1.15rem) 'Cormorant Garamond',serif!important;letter-spacing:.18em!important;text-align:center!important;text-shadow:0 2px 5px rgba(20,12,7,.8)!important;backface-visibility:hidden!important;}
+.opening-cover:after{content:"✦"!important;position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;color:#e5c78d!important;font:clamp(2.2rem,7vw,6rem) 'Cormorant Garamond',serif!important;text-shadow:0 2px 4px #21180f!important;background:linear-gradient(90deg,#e9dcc1,#d5c19d)!important;transform:rotateY(180deg)!important;backface-visibility:hidden!important;}
+@keyframes spaceboundRealBookOpen{
+  0%{transform:rotateY(0deg);filter:brightness(1)}
+  18%{transform:rotateY(-22deg);filter:brightness(.96)}
+  58%{transform:rotateY(-132deg);filter:brightness(1.02)}
+  82%{transform:rotateY(-166deg);filter:brightness(1)}
+  100%{transform:rotateY(-180deg);filter:brightness(1)}
+}
+.opening-panorama{opacity:0!important;animation:spaceboundPanoramaReveal .72s ease 3.08s forwards!important;}
+@media(prefers-reduced-motion:reduce){.opening-cover{animation-duration:.01ms!important}.opening-panorama{animation-delay:.01ms!important}}
+
+/* Specificity-safe layout resets for the previous continuation-page positioning rules. */
+.chapter-panel .chapter-reading-inner{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;inset:auto!important;width:min(100%,1180px)!important;max-width:1180px!important;max-height:100%!important;overflow:hidden!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{position:relative!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;inset:auto!important;width:min(100%,1280px)!important;max-width:1280px!important;max-height:100%!important;overflow:hidden!important;margin:auto!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{position:absolute!important;left:0!important;right:0!important;top:54px!important;bottom:0!important;}
+
+/* V20 — dark stage + branded front cover, followed by the existing panoramic retrieval scroll. */
+.book-opening-overlay,
+.opening-book{background:#17120e!important;}
+.opening-page-left{background:linear-gradient(90deg,#17120e,#211810 72%,#2c2016)!important;box-shadow:inset -18px 0 28px rgba(0,0,0,.42)!important;}
+.opening-page-right{background:linear-gradient(90deg,#d2c09e,#e4d5b8 14%,#d9c8a6)!important;}
+.opening-cover{
+  top:0!important;right:0!important;bottom:0!important;left:auto!important;width:50%!important;
+  transform-origin:left center!important;
+  background:linear-gradient(105deg,#3a2418 0%,#68432c 17%,#956746 54%,#5b3824 100%)!important;
+  border-left:4px solid rgba(28,17,10,.78)!important;
+  box-shadow:inset 13px 0 20px rgba(255,231,190,.13),inset -14px 0 24px rgba(0,0,0,.34),-15px 0 38px rgba(0,0,0,.48)!important;
+  animation:spaceboundRealBookOpen 3s cubic-bezier(.42,0,.2,1) .08s both!important;
+}
+.opening-cover:before{
+  content:"THE SPACEBOUND LIBRARY"!important;
+  position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:clamp(20px,5vw,72px)!important;color:#f0d9ad!important;
+  font:600 clamp(1.1rem,2.5vw,2.15rem)/1.25 'Cormorant Garamond',serif!important;
+  letter-spacing:.14em!important;text-align:center!important;text-shadow:0 3px 10px rgba(15,8,4,.8)!important;
+  backface-visibility:hidden!important;
+}
+.opening-cover:after{
+  content:""!important;position:absolute!important;inset:0!important;display:block!important;
+  background:linear-gradient(90deg,#e9dcc1,#d5c19d)!important;
+  transform:rotateY(180deg)!important;backface-visibility:hidden!important;
+}
+@keyframes spaceboundRealBookOpen{
+  0%{transform:rotateY(0deg);filter:brightness(.88)}
+  18%{transform:rotateY(-24deg);filter:brightness(.92)}
+  58%{transform:rotateY(-132deg);filter:brightness(1.02)}
+  82%{transform:rotateY(-166deg);filter:brightness(1)}
+  100%{transform:rotateY(-180deg);filter:brightness(1)}
+}
+/* Keep the panoramic reveal timing and right-to-left motion unchanged. */
+.opening-panorama{animation:spaceboundPanoramaReveal .72s ease 3.08s forwards!important;}
+
+/* V20 — spacious, unboxed reading spreads contained between the navigation bars. */
+.reader-viewport{inset:58px 0 64px!important;overflow:hidden!important;}
+.reader-panel{overflow:hidden!important;}
+/* Chapter-opening pages: full-height brown title rail on the left; transparent reading area on the right. */
+.chapter-panel:not(.chapter-title-docked) .chapter-heading{
+  position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:34%!important;height:100%!important;
+  display:flex!important;justify-content:center!important;align-items:flex-start!important;flex-direction:column!important;
+  padding:clamp(24px,4vw,68px)!important;margin:0!important;box-sizing:border-box!important;
+  background:linear-gradient(110deg,#634a31 0%,#7a6248 100%)!important;
+  color:#f5e8cf!important;border:0!important;box-shadow:none!important;transform:none!important;
+  text-align:left!important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading h2{color:#f7ead1!important;text-align:left!important;text-shadow:0 2px 9px rgba(0,0,0,.16)!important;}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-surface{
+  position:absolute!important;left:34%!important;right:0!important;top:0!important;bottom:0!important;
+  width:auto!important;height:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  padding:clamp(22px,3.8vw,64px)!important;background:transparent!important;border:0!important;outline:0!important;
+  box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:hidden!important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-inner{
+  position:relative!important;inset:auto!important;width:100%!important;max-width:1240px!important;max-height:100%!important;
+  min-width:0!important;min-height:0!important;margin:auto!important;padding:clamp(12px,1.6vw,24px)!important;
+  display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:stretch!important;
+  overflow:hidden!important;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#453522!important;
+}
+/* Continuation sections: same open canvas, title centred under mission title, body centred beneath it. */
+.chapter-panel.chapter-title-docked .chapter-heading{
+  position:absolute!important;left:50%!important;right:auto!important;top:12px!important;bottom:auto!important;
+  width:min(78vw,1050px)!important;height:auto!important;padding:0 12px!important;margin:0!important;
+  transform:translateX(-50%)!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;text-align:center!important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2{color:#493522!important;font-size:clamp(1.15rem,1.7vw,1.6rem)!important;line-height:1.2!important;letter-spacing:.04em!important;text-align:center!important;text-shadow:none!important;}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption{display:none!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{
+  position:absolute!important;left:0!important;right:0!important;top:58px!important;bottom:0!important;width:100%!important;height:auto!important;
+  padding:clamp(18px,3vh,38px) clamp(5vw,8vw,120px)!important;background:transparent!important;border:0!important;
+  box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;overflow:hidden!important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-inner{
+  width:min(100%,1320px)!important;max-width:1320px!important;max-height:100%!important;min-width:0!important;
+  overflow:hidden!important;align-items:center!important;text-align:center!important;background:transparent!important;
+}
+/* Natural wrapping and readable line lengths; no horizontal clipping or vertical scrollbars. */
+.chapter-reading-inner h1,.chapter-body,.chapter-body p,.chapter-body li,.chapter-body h2,.chapter-body h3{
+  max-width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;
+}
+.chapter-reading-inner h1{font-size:calc(clamp(1.7rem,2.8vw,3rem)*var(--reader-fit-scale,1))!important;line-height:1.08!important;}
+.chapter-body{width:100%!important;color:#493b2a!important;font-size:calc(clamp(1.02rem,1.32vw,1.28rem)*var(--reader-fit-scale,1))!important;line-height:1.65!important;text-align:left!important;}
+.chapter-body p{margin:0 0 .72em!important;}
+.chapter-photo-card{flex:0 0 auto!important;align-self:center!important;width:min(46%,520px)!important;max-width:520px!important;margin:0 auto 14px!important;padding:8px 8px 6px!important;background:#fffdf7!important;border:0!important;box-shadow:0 8px 24px rgba(57,39,20,.18)!important;}
+.chapter-photo-card img{display:block!important;width:100%!important;height:clamp(110px,21vh,205px)!important;max-height:22vh!important;object-fit:cover!important;}
+.chapter-photo-card figcaption{padding:7px 3px 1px!important;color:#66543b!important;font:italic clamp(.75rem,.95vw,.95rem)/1.25 'Cormorant Garamond',serif!important;text-align:center!important;}
+/* Intro and all other spreads remain edge-to-edge, with no decorative content panels. */
+.intro-main,.intro-toc,.chapter-reading-surface,.chapter-reading-inner{background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+.reader-viewport,.reader-track,.reader-panel,.intro-panel,.intro-main,.intro-toc,.intro-toc ol,.chapter-panel,.chapter-reading-surface,.chapter-reading-inner{overflow:hidden!important;}
+@media(max-width:900px){
+ .chapter-panel:not(.chapter-title-docked) .chapter-heading{width:32%!important;padding:20px!important;}
+ .chapter-panel:not(.chapter-title-docked) .chapter-reading-surface{left:32%!important;padding:14px!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-surface{top:52px!important;padding:14px 4vw!important;}
+}
+@media(max-width:650px){
+ .chapter-panel:not(.chapter-title-docked) .chapter-heading{width:29%!important;padding:12px!important;}
+ .chapter-panel:not(.chapter-title-docked) .chapter-heading h2{font-size:clamp(1.2rem,5vw,1.9rem)!important;}
+ .chapter-panel:not(.chapter-title-docked) .chapter-reading-surface{left:29%!important;padding:8px!important;}
+ .chapter-reading-inner h1{font-size:calc(1.25rem*var(--reader-fit-scale,1))!important;}
+ .chapter-body{font-size:calc(.82rem*var(--reader-fit-scale,1))!important;line-height:1.42!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading{top:5px!important;width:90%!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading h2{font-size:1rem!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-surface{top:42px!important;padding:8px 12px!important;}
+ .chapter-photo-card{width:min(72%,270px)!important;}
+ .chapter-photo-card img{height:clamp(75px,15vh,125px)!important;}
+}
+
+/* V21 — uniform parchment canvas; chapter photos sit beside, never above, their text. */
+.reader-panorama-backdrop,
+.reader-panorama-backdrop:after,
+.reader-panel,
+.chapter-panel,
+.chapter-reading-surface,
+.chapter-reading-inner,
+.chapter-reading-copy {
+  background: #d9c9a8 !important;
+}
+.reader-panorama-backdrop:after { display:none !important; }
+
+/* Chapter title rail uses the same page colour instead of a contrasting brown block. */
+.chapter-panel:not(.chapter-title-docked) .chapter-heading {
+  background:#d9c9a8 !important;
+  color:#493522 !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading h2 {
+  color:#493522 !important;
+  text-shadow:none !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading .page-kicker,
+.chapter-panel:not(.chapter-title-docked) .chapter-heading .chapter-rail-caption {
+  color:#80633e !important;
+  text-shadow:none !important;
+}
+
+/* Keep the spread full-bleed. The left column is reserved for its section-specific photo. */
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-surface,
+.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  background:#d9c9a8 !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-inner,
+.chapter-panel.chapter-title-docked .chapter-reading-inner {
+  display:grid !important;
+  grid-template-columns:minmax(220px,.42fr) minmax(0,1fr) !important;
+  align-items:center !important;
+  justify-content:stretch !important;
+  gap:clamp(22px,4vw,64px) !important;
+  width:100% !important;
+  max-width:1500px !important;
+  max-height:100% !important;
+  margin:0 auto !important;
+  padding:clamp(12px,2vw,28px) !important;
+  overflow:hidden !important;
+  background:#d9c9a8 !important;
+}
+.chapter-panel .chapter-photo-card {
+  grid-column:1 !important;
+  grid-row:1 !important;
+  align-self:center !important;
+  justify-self:center !important;
+  width:min(100%,520px) !important;
+  max-width:520px !important;
+  margin:0 !important;
+  padding:8px 8px 6px !important;
+  background:#fffdf7 !important;
+  box-shadow:0 8px 24px rgba(57,39,20,.16) !important;
+}
+.chapter-panel .chapter-photo-card img {
+  display:block !important;
+  width:100% !important;
+  height:clamp(170px,42vh,430px) !important;
+  max-height:48vh !important;
+  object-fit:contain !important;
+  background:#d9c9a8 !important;
+}
+.chapter-panel .chapter-photo-card figcaption {
+  padding:8px 4px 2px !important;
+  color:#66543b !important;
+  text-align:center !important;
+}
+.chapter-panel .chapter-reading-copy {
+  grid-column:2 !important;
+  grid-row:1 !important;
+  min-width:0 !important;
+  max-height:100% !important;
+  overflow:hidden !important;
+  align-self:center !important;
+  padding:clamp(8px,1.5vw,22px) !important;
+  color:#493b2a !important;
+}
+.chapter-panel .chapter-reading-copy h1 {
+  margin:0 !important;
+  color:#493522 !important;
+  font-size:clamp(1.8rem,3vw,3.2rem) !important;
+  line-height:1.08 !important;
+}
+.chapter-panel .chapter-reading-copy .intro-rule { margin:12px 0 18px !important; }
+.chapter-panel .chapter-body {
+  width:100% !important;
+  max-width:100% !important;
+  color:#493b2a !important;
+  font-size:clamp(1.02rem,1.35vw,1.3rem) !important;
+  line-height:1.68 !important;
+  text-align:left !important;
+  overflow-wrap:anywhere !important;
+}
+.chapter-panel .chapter-body p { margin:0 0 .8em !important; }
+
+/* When a section has no image, let its text use the entire spread. */
+.chapter-panel .chapter-reading-inner.text-only {
+  display:flex !important;
+  justify-content:center !important;
+}
+.chapter-panel .chapter-reading-inner.text-only .chapter-reading-copy {
+  width:min(100%,1280px) !important;
+  margin:auto !important;
+  text-align:center !important;
+}
+.chapter-panel .chapter-reading-inner.text-only .chapter-body { text-align:center !important; }
+
+/* Continuation pages keep their small chapter label beneath the mission title; image remains left. */
+.chapter-panel.chapter-title-docked .chapter-heading {
+  background:#d9c9a8 !important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  top:58px !important;
+  bottom:0 !important;
+  padding:clamp(10px,2vh,22px) clamp(3vw,5vw,72px) !important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-inner {
+  text-align:left !important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-copy,
+.chapter-panel.chapter-title-docked .chapter-reading-copy .chapter-body {
+  text-align:left !important;
+}
+
+@media(max-width:800px) {
+  .chapter-panel:not(.chapter-title-docked) .chapter-reading-inner,
+  .chapter-panel.chapter-title-docked .chapter-reading-inner {
+    grid-template-columns:minmax(150px,.38fr) minmax(0,1fr) !important;
+    gap:14px !important;
+    padding:10px !important;
+  }
+  .chapter-panel .chapter-photo-card { width:100% !important; }
+  .chapter-panel .chapter-photo-card img { height:clamp(120px,32vh,280px) !important; }
+  .chapter-panel .chapter-reading-copy { padding:6px !important; }
+  .chapter-panel .chapter-reading-copy h1 { font-size:clamp(1.35rem,3.5vw,2.2rem) !important; }
+  .chapter-panel .chapter-body { font-size:clamp(.82rem,1.6vw,1rem) !important; line-height:1.48 !important; }
+}
+@media(max-width:560px) {
+  .chapter-panel:not(.chapter-title-docked) .chapter-heading { width:25% !important; padding:8px !important; }
+  .chapter-panel:not(.chapter-title-docked) .chapter-heading h2 { font-size:1.1rem !important; }
+  .chapter-panel:not(.chapter-title-docked) .chapter-reading-surface { left:25% !important; }
+  .chapter-panel:not(.chapter-title-docked) .chapter-reading-inner,
+  .chapter-panel.chapter-title-docked .chapter-reading-inner { grid-template-columns:minmax(105px,.34fr) minmax(0,1fr) !important; gap:8px !important; padding:6px !important; }
+  .chapter-panel .chapter-photo-card { padding:4px !important; }
+  .chapter-panel .chapter-photo-card img { height:clamp(90px,25vh,190px) !important; }
+  .chapter-panel .chapter-reading-copy h1 { font-size:1.1rem !important; }
+  .chapter-panel .chapter-body { font-size:.72rem !important; line-height:1.35 !important; }
+}
+
+/* V22 — plain parchment spreads, no frame/border panels; retain the photo treatment. */
+.reader-panorama-backdrop,
+.reader-panorama-backdrop:after,
+.reader-viewport,
+.reader-track,
+.reader-panel,
+.chapter-panel,
+.chapter-heading,
+.chapter-reading-surface,
+.chapter-reading-inner,
+.chapter-reading-copy {
+  background: #d9c9a8 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+.reader-panorama-backdrop:after { display:none !important; }
+.chapter-panel:not(.chapter-title-docked) .chapter-heading {
+  background:#d9c9a8 !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-surface,
+.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  background:#d9c9a8 !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-inner,
+.chapter-panel.chapter-title-docked .chapter-reading-inner {
+  background:#d9c9a8 !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+.chapter-panel .chapter-reading-copy {
+  background:transparent !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+/* The photo itself keeps its white print mount; no panel is added around the text. */
+.chapter-panel .chapter-photo-card {
+  background:#fffdf7 !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:0 8px 22px rgba(57,39,20,.14) !important;
+}
+
+/* After the 3s cover turn, show the continuous panorama for at least five seconds. */
+.book-opening-overlay,
+.opening-book { background:#d9c9a8 !important; }
+.opening-page-left,
+.opening-page-right {
+  background:#d9c9a8 !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.opening-panorama {
+  background:#d9c9a8 !important;
+  animation:spaceboundPanoramaReveal .72s ease 3.08s forwards !important;
+}
+.opening-panorama .panorama-moving-track {
+  animation:handscrollLeft 42s linear infinite !important;
+}
+.panorama-message {
+  background:rgba(244,235,215,.78) !important;
+  border-top:1px solid rgba(100,76,46,.35) !important;
+  border-bottom:1px solid rgba(100,76,46,.35) !important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .opening-panorama .panorama-moving-track { animation-duration:42s !important; }
+}
+
+/* V23 — clean, unboxed reading canvas; slightly larger type; no decorative glow. */
+.reader,
+.reader-viewport,
+.reader-track,
+.reader-panel,
+.chapter-panel,
+.chapter-heading,
+.chapter-reading-surface,
+.chapter-reading-inner,
+.chapter-reading-copy,
+.chapter-body,
+.chapter-panel.chapter-title-docked .chapter-reading-surface,
+.chapter-panel.chapter-title-docked .chapter-reading-inner {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+/* The page itself supplies the only background colour. */
+.reader,
+.reader-panorama-backdrop {
+  background: #d9c9a8 !important;
+}
+.reader-panorama-backdrop::before,
+.reader-panorama-backdrop::after,
+.chapter-panel::before,
+.chapter-panel::after,
+.chapter-heading::before,
+.chapter-heading::after,
+.chapter-reading-surface::before,
+.chapter-reading-surface::after,
+.chapter-reading-inner::before,
+.chapter-reading-inner::after,
+.chapter-reading-copy::before,
+.chapter-reading-copy::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading {
+  background: transparent !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-surface,
+.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  background: transparent !important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-reading-inner,
+.chapter-panel.chapter-title-docked .chapter-reading-inner,
+.chapter-panel .chapter-reading-copy {
+  background: transparent !important;
+}
+/* Remove the glow from the decorative star-and-line separators. */
+.intro-rule,
+.chapter-rail-rule,
+.chapter-heading .chapter-rail-rule,
+.chapter-reading-copy .intro-rule {
+  text-shadow: none !important;
+  filter: none !important;
+  box-shadow: none !important;
+  -webkit-text-stroke: 0 !important;
+}
+/* Make the reading text a little larger while preserving natural wrapping. */
+.chapter-reading-copy h1,
+.chapter-reading-inner h1 {
+  font-size: calc(clamp(1.9rem, 3.05vw, 3.3rem) * var(--reader-fit-scale, 1)) !important;
+  line-height: 1.1 !important;
+}
+.chapter-body,
+.chapter-body p,
+.chapter-body li {
+  font-size: calc(clamp(1.12rem, 1.48vw, 1.42rem) * var(--reader-fit-scale, 1)) !important;
+  line-height: 1.72 !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+}
+.chapter-body p { margin-bottom: .85em !important; }
+/* Keep the existing white photo mount; this is the only intentional framed element. */
+.chapter-photo-card {
+  background: #fffdf7 !important;
+  border: 0 !important;
+  box-shadow: 0 7px 18px rgba(57,39,20,.12) !important;
+}
+
+/* V23 retrieval interlude: leave the cover animation untouched, pause briefly, then show the old panorama for ~5s. */
+.opening-panorama {
+  opacity: 0 !important;
+  animation: spaceboundPanoramaReveal .55s ease 3.25s forwards !important;
+  background: #d9c9a8 !important;
+}
+.opening-panorama .panorama-moving-track {
+  animation: handscrollLeft 42s linear infinite !important;
+  will-change: transform;
+}
+.panorama-message {
+  opacity: 0;
+  background: rgba(244,235,215,.78) !important;
+  text-shadow: none !important;
+}
+.panorama-active .panorama-message {
+  animation: messageReveal .8s ease 3.35s forwards !important;
+}
+
+
+/* V24: restore the original illustrated handscroll retrieval interlude after the existing cover animation. */
+.opening-panorama{opacity:0!important;animation:none!important;background:#d9c9a8!important;}
+.panorama-active .opening-panorama{opacity:1!important;}
+.opening-panorama .panorama-moving-track{animation:handscrollLeft 42s linear infinite!important;}
+.opening-panorama .panorama-art{display:block!important;flex:0 0 50%!important;width:50%!important;height:100%!important;object-fit:cover!important;}
+.panorama-message{opacity:0!important;animation:none!important;}
+.panorama-active .panorama-message{animation:messageReveal .85s ease .12s forwards!important;}
+.book-opening-overlay.book-opening-complete{transition-delay:0s!important;}
+
+/* Chapter title treatment: a full-height brown rail on a chapter's first section. */
+.chapter-panel:not(.chapter-title-docked) .chapter-heading{
+  position:absolute!important;left:0!important;top:0!important;bottom:0!important;width:32vw!important;max-width:460px!important;
+  min-height:100%!important;transform:none!important;display:flex!important;flex-direction:column!important;
+  justify-content:center!important;align-items:flex-start!important;text-align:left!important;
+  padding:clamp(28px,4vw,68px)!important;margin:0!important;
+  color:#f2e4c8!important;background:linear-gradient(135deg,#5b402b 0%,#76563a 55%,#4b3424 100%)!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;text-shadow:none!important;
+}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading h2{color:#f5e7cb!important;text-shadow:none!important;}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading .page-kicker{color:#d4b37c!important;}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading .chapter-rail-rule{color:#d4b37c!important;text-shadow:none!important;filter:none!important;}
+.chapter-panel:not(.chapter-title-docked) .chapter-heading .chapter-rail-caption{color:#ddc9a7!important;}
+
+/* The second section docks the title in a restrained brown label; third+ sections keep it still. */
+.chapter-panel.chapter-title-docked .chapter-heading{
+  left:50%!important;top:clamp(12px,2vh,24px)!important;bottom:auto!important;
+  width:max-content!important;max-width:min(82vw,980px)!important;min-height:0!important;
+  padding:7px clamp(18px,2.5vw,32px)!important;transform:translateX(-50%)!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:linear-gradient(110deg,#5b402b,#76563a 55%,#4b3424)!important;
+  color:#f5e7cb!important;border:0!important;border-radius:2px!important;box-shadow:none!important;
+  text-align:center!important;text-shadow:none!important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2{margin:0!important;color:#f5e7cb!important;font-size:clamp(1.05rem,1.6vw,1.45rem)!important;line-height:1.2!important;letter-spacing:.04em!important;text-align:center!important;text-shadow:none!important;}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption{display:none!important;}
+.chapter-panel.chapter-title-docked .chapter-reading-surface{top:clamp(64px,9vh,92px)!important;}
+.chapter-panel.chapter-title-static .chapter-heading,
+.chapter-panel.chapter-title-static .chapter-heading h2{transition:none!important;animation:none!important;}
+.chapter-panel.chapter-title-static .chapter-heading{will-change:auto!important;}
+
+@media(max-width:650px){
+ .chapter-panel:not(.chapter-title-docked) .chapter-heading{width:34vw!important;padding:16px!important;}
+ .chapter-panel:not(.chapter-title-docked) .chapter-heading h2{font-size:clamp(1.45rem,6vw,2.2rem)!important;}
+ .chapter-panel.chapter-title-docked .chapter-heading{top:8px!important;max-width:92vw!important;padding:6px 12px!important;}
+ .chapter-panel.chapter-title-docked .chapter-reading-surface{top:54px!important;}
+}
+
+/* V25/V26 opening animation rules. Do not lock the whole site:
+   the bookshelf needs normal document scrolling. */
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#app {
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
+}
+
+/* Lock scrolling only while the immersive reader is active. */
+html:has(body.is-reader),
+body.is-reader {
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+body.is-reader #app {
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+/* Restore vertical document scrolling in bookshelf mode, even if
+   an earlier/global rule attempts to lock html, body, or #app. */
+html:has(body.is-library) {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+body.is-library {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+body.is-library #app,
+body.is-library .library-page {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+.reader.immersive-reader {
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+}
+.reader-panorama-backdrop { pointer-events:none !important; }
+.book-opening-overlay,
+.opening-book {
+  position:fixed !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  overflow:hidden !important;
+  background:#d9c9a8 !important;
+}
+.opening-panorama {
+  z-index:6 !important;
+  inset:0 !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  background:#d9c9a8 !important;
+  transition:opacity .35s ease !important;
+  animation:none !important;
+}
+.panorama-active .opening-panorama {
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.opening-cover { z-index:8 !important; }
+.panorama-moving-track {
+  position:absolute !important;
+  inset:0 auto 0 0 !important;
+  display:flex !important;
+  width:200% !important;
+  height:100% !important;
+  animation:handscrollLeft 18s linear infinite !important;
+  will-change:transform;
+}
+.panorama-art {
+  display:block !important;
+  flex:0 0 50% !important;
+  width:50% !important;
+  height:100% !important;
+  background-repeat:no-repeat !important;
+  background-position:center !important;
+  background-size:cover !important;
+}
+.panorama-message {
+  position:absolute !important;
+  z-index:12 !important;
+  left:50% !important;
+  top:50% !important;
+  width:max-content !important;
+  max-width:90vw !important;
+  padding:14px 24px !important;
+  transform:translate(-50%,-50%) !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:rgba(244,235,215,.82) !important;
+  border:1px solid rgba(100,76,46,.34) !important;
+  box-shadow:0 8px 26px rgba(45,32,18,.12) !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  animation:none !important;
+}
+.panorama-active .panorama-message {
+  opacity:1 !important;
+  visibility:visible !important;
+  animation:panoramaStatusFade .5s ease .15s both !important;
+}
+.panorama-message p {
+  margin:0 !important;
+  color:#443322 !important;
+  font:600 clamp(.78rem,1.5vw,1.05rem)/1.2 'DM Sans',sans-serif !important;
+  letter-spacing:.18em !important;
+  text-align:center !important;
+  white-space:normal !important;
+}
+@keyframes panoramaStatusFade {
+  from { opacity:0; transform:translate(-50%,-44%); }
+  to { opacity:1; transform:translate(-50%,-50%); }
+}
+/* Returning to section two should restore its already-centred title, not show the chapter-opening rail again. */
+.chapter-panel.chapter-title-static .chapter-heading,
+.chapter-panel.chapter-title-static .chapter-heading h2 {
+  animation:none !important;
+  transition:none !important;
+}
+
+
+/* V26 FIX — keep previous/next panels exactly aligned to the reader viewport. */
+.reader-viewport {
+  width: 100%;
+  left: 0;
+  right: 0;
+}
+.reader-track {
+  width: max-content !important;
+  transition: transform 1.12s cubic-bezier(.22,.61,.36,1) !important;
+}
+.reader-panel {
+  flex: 0 0 100vw !important;
+  width: 100vw !important;
+  min-width: 100vw !important;
+  box-sizing: border-box !important;
+  transform: none;
+}
+.reader-panel.enter-from-left,
+.reader-panel.enter-from-right {
+  animation: none !important;
+}
+/* A panel transition is handled by the track only; panel-level transforms
+   previously caused a page to appear offset when navigating backwards. */
+
+/* Darker plain left leaf behind the cover, contrasting with the brown cover. */
+.opening-page-left {
+  background: linear-gradient(90deg, #17120e 0%, #211810 76%, #302216 100%) !important;
+  box-shadow: inset -22px 0 30px rgba(0,0,0,.38) !important;
+}
+.opening-page-right {
+  background: #ddcba9 !important;
+}
+
+/* Show the complete panorama artwork, without cropping its top/bottom edges. */
+.opening-panorama .panorama-moving-track {
+  width: 200% !important;
+  height: 100% !important;
+  display: flex !important;
+  animation: handscrollLeft 42s linear infinite !important;
+}
+.opening-panorama .panorama-art {
+  display: block !important;
+  flex: 0 0 50% !important;
+  width: 50% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #ddcba9 !important;
+}
+
+
+/* FINAL HOMEPAGE SCROLL GUARD — must remain after all animation rules. */
+html:has(body.is-library) {
+  height: auto !important;
+  overflow-y: auto !important;
+}
+body.is-library,
+body.is-library #app,
+body.is-library .library-page {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: visible !important;
+}
+body.is-library {
+  overflow-y: auto !important;
+}
+
+
+/* V27 refinements: subtle library scrollbar, seamless panorama handoff,
+   and simple page-to-page movement without chapter-title transition effects. */
+
+/* Keep the homepage scrollbar available, but visually quiet. */
+html:has(body.is-library),
+body.is-library {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(190, 165, 125, .34) transparent;
+}
+body.is-library::-webkit-scrollbar,
+html:has(body.is-library)::-webkit-scrollbar {
+  width: 7px;
+}
+body.is-library::-webkit-scrollbar-track,
+html:has(body.is-library)::-webkit-scrollbar-track {
+  background: transparent;
+}
+body.is-library::-webkit-scrollbar-thumb,
+html:has(body.is-library)::-webkit-scrollbar-thumb {
+  background: rgba(190, 165, 125, .30);
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+body.is-library::-webkit-scrollbar-thumb:hover,
+html:has(body.is-library)::-webkit-scrollbar-thumb:hover {
+  background: rgba(205, 178, 136, .58);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+/* No visible blank leaf between the cover turn and the panorama.
+   The panorama is already underneath the cover; reveal it as the cover clears. */
+.book-opening-overlay .opening-panorama {
+  z-index: 7 !important;
+  visibility: visible !important;
+  opacity: 0 !important;
+  transition: opacity .18s linear !important;
+}
+.book-opening-overlay.panorama-active .opening-panorama {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.book-opening-overlay.panorama-active .opening-cover {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transition: opacity .08s linear !important;
+  pointer-events: none !important;
+}
+.book-opening-overlay.panorama-active .opening-page-left,
+.book-opening-overlay.panorama-active .opening-page-right {
+  visibility: hidden !important;
+}
+.book-opening-overlay .panorama-moving-track {
+  animation: handscrollLeft 42s linear infinite !important;
+}
+.book-opening-overlay .panorama-art {
+  object-fit: contain !important;
+  background: #ddcba9 !important;
+}
+
+/* Page navigation is one clean horizontal slide. Keep chapter title rails
+   as part of their page; never animate/dock them as a separate transition. */
+.reader-track {
+  transition: transform .72s cubic-bezier(.22,.61,.36,1) !important;
+}
+.reader-panel,
+.reader-panel.is-active {
+  animation: none !important;
+}
+.chapter-panel .chapter-heading,
+.chapter-panel .chapter-heading h2,
+.chapter-panel .chapter-heading .page-kicker,
+.chapter-panel .chapter-heading .chapter-rail-rule,
+.chapter-panel .chapter-heading .chapter-rail-caption {
+  animation: none !important;
+  transition: none !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading {
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 32vw !important;
+  max-width: 460px !important;
+  min-height: 100% !important;
+  transform: none !important;
+  padding: clamp(28px,4vw,68px) !important;
+  background: linear-gradient(135deg,#5b402b 0%,#76563a 55%,#4b3424 100%) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  text-align: left !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2 {
+  margin: 5px 0 12px !important;
+  color: #f5e7cb !important;
+  font-size: clamp(2rem,4vw,4.4rem) !important;
+  line-height: .98 !important;
+  letter-spacing: normal !important;
+  text-align: left !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption {
+  display: block !important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  position: relative !important;
+  top: auto !important;
+}
+
+
+/* V28: seamless cover-to-panorama handoff and centered continuation title. */
+
+/* The panorama is mounted from the beginning, behind the turning cover.
+   At the exact end of the cover turn it becomes the only visible layer. */
+.book-opening-overlay {
+  background: #ddcba9 !important;
+}
+.book-opening-overlay .opening-book {
+  background: #ddcba9 !important;
+}
+.book-opening-overlay .opening-page-left,
+.book-opening-overlay .opening-page-right {
+  background: #ddcba9 !important;
+  box-shadow: none !important;
+}
+.book-opening-overlay .opening-panorama {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 20 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 0 !important;
+  transition: opacity .12s linear !important;
+  background: #ddcba9 !important;
+}
+.book-opening-overlay.panorama-active .opening-panorama {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.book-opening-overlay.panorama-active .opening-cover,
+.book-opening-overlay.panorama-active .opening-page-left,
+.book-opening-overlay.panorama-active .opening-page-right {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  animation: none !important;
+}
+.book-opening-overlay .panorama-moving-track {
+  position: absolute !important;
+  inset: 0 auto 0 0 !important;
+  width: 200% !important;
+  height: 100% !important;
+  animation: handscrollLeft 42s linear infinite !important;
+}
+.book-opening-overlay .panorama-art {
+  display: block !important;
+  flex: 0 0 50% !important;
+  width: 50% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: #ddcba9 !important;
+}
+.book-opening-overlay .panorama-message {
+  z-index: 30 !important;
+}
+.book-opening-overlay.panorama-active .panorama-message {
+  opacity: 1 !important;
+}
+
+/* For subsequent sections within a chapter, center the chapter title in
+   the brown left-hand rail; the right-hand reading area stays unchanged. */
+.chapter-continuation-page .chapter-heading {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.chapter-continuation-page .chapter-heading .page-kicker,
+.chapter-continuation-page .chapter-heading h2,
+.chapter-continuation-page .chapter-heading .chapter-rail-rule,
+.chapter-continuation-page .chapter-heading .chapter-rail-caption {
+  width: 100% !important;
+  text-align: center !important;
+}
+.chapter-continuation-page .chapter-heading h2 {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+
+/* V29: section continuation pages place the chapter heading above the content. */
+.chapter-continuation-page {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  align-content: stretch !important;
+  gap: clamp(8px, 1.4vh, 16px) !important;
+  padding: clamp(12px, 2.2vh, 24px) clamp(22px, 4vw, 62px) !important;
+}
+.chapter-continuation-page .chapter-heading {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.chapter-continuation-page .chapter-heading .page-kicker,
+.chapter-continuation-page .chapter-heading h2,
+.chapter-continuation-page .chapter-heading .chapter-rail-rule {
+  width: 100% !important;
+  text-align: center !important;
+}
+.chapter-continuation-page .chapter-heading .page-kicker {
+  margin: 0 0 2px !important;
+  font-size: .56rem !important;
+}
+.chapter-continuation-page .chapter-heading h2 {
+  margin: 0 auto 2px !important;
+  color: #493522 !important;
+  font-size: clamp(1.5rem, 2.6vw, 2.7rem) !important;
+  line-height: 1.02 !important;
+}
+.chapter-continuation-page .chapter-heading .chapter-rail-rule {
+  color: #a27b49 !important;
+  text-shadow: none !important;
+}
+.chapter-continuation-page .chapter-reading-surface {
+  min-height: 0 !important;
+  padding: clamp(8px, 1.5vw, 20px) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.chapter-continuation-page .chapter-reading-inner {
+  width: min(100%, 1450px) !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  padding: clamp(8px, 1.5vw, 18px) !important;
+}
+.chapter-continuation-page .chapter-reading-inner.has-section-photo {
+  display: grid !important;
+  grid-template-columns: minmax(220px, .72fr) minmax(0, 1.28fr) !important;
+  align-items: center !important;
+  gap: clamp(24px, 5vw, 76px) !important;
+}
+.chapter-continuation-page .chapter-photo-card {
+  width: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.chapter-continuation-page .chapter-photo-card img {
+  display: block !important;
+  width: 100% !important;
+  max-height: min(58vh, 560px) !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+.chapter-continuation-page .chapter-photo-card figcaption {
+  margin-top: 8px !important;
+  padding: 0 !important;
+  color: #806544 !important;
+  background: transparent !important;
+  text-align: center !important;
+  font-size: .78rem !important;
+}
+.chapter-continuation-page .chapter-reading-copy {
+  min-width: 0 !important;
+  width: 100% !important;
+}
+.chapter-continuation-page .chapter-reading-copy h1 {
+  font-size: clamp(1.9rem, 3.1vw, 3.2rem) !important;
+}
+.chapter-continuation-page .chapter-body {
+  font-size: clamp(1.08rem, 1.65vw, 1.35rem) !important;
+  line-height: 1.62 !important;
+}
+.chapter-continuation-page .chapter-reading-inner.text-only {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.chapter-continuation-page .chapter-reading-inner.text-only .chapter-reading-copy {
+  max-width: 1120px !important;
+  text-align: center !important;
+}
+.chapter-continuation-page .chapter-reading-inner.text-only .chapter-body {
+  text-align: center !important;
+}
+@media(max-width:700px) {
+  .chapter-continuation-page .chapter-reading-inner.has-section-photo {
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) !important;
+    gap: 14px !important;
+  }
+  .chapter-continuation-page .chapter-photo-card img {
+    max-height: 42vh !important;
+  }
+  .chapter-continuation-page .chapter-reading-copy h1 {
+    font-size: clamp(1.35rem, 4.8vw, 2rem) !important;
+  }
+  .chapter-continuation-page .chapter-body {
+    font-size: clamp(.9rem, 2.5vw, 1.05rem) !important;
+  }
+}
+
+
+/* V30: chapter continuation title, image mount/zoom and reverse cover transition */
+.chapter-continuation-page .chapter-heading-continuation {
+  position: absolute !important;
+  z-index: 5 !important;
+  inset: 0 0 auto 0 !important;
+  width: 100% !important;
+  min-height: clamp(76px, 12vh, 116px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 24px !important;
+  background: transparent !important;
+  text-align: center !important;
+  pointer-events: none !important;
+  animation: continuationTitleArrive .65s cubic-bezier(.2,.7,.2,1) both !important;
+}
+.chapter-continuation-page .chapter-heading-continuation .page-kicker,
+.chapter-continuation-page .chapter-heading-continuation .chapter-rail-rule,
+.chapter-continuation-page .chapter-heading-continuation .chapter-rail-caption { display:none !important; }
+.chapter-continuation-page .chapter-heading-continuation h2 {
+  margin:0 !important; color:#4a3322 !important; font-size:clamp(1.4rem,2.3vw,2.25rem) !important;
+  line-height:1.12 !important; text-align:center !important; text-shadow:none !important;
+}
+.chapter-continuation-page .chapter-reading-surface { top:clamp(82px,13vh,126px) !important; }
+@keyframes continuationTitleArrive {
+  from { opacity:0; transform:translateY(-13px); }
+  to { opacity:1; transform:translateY(0); }
+}
+.chapter-photo-card {
+  background:#fff !important; padding:10px 10px 8px !important; border:0 !important;
+  outline:0 !important; box-shadow:0 8px 24px rgba(57,39,22,.13) !important;
+}
+.chapter-photo-card .image-zoom-trigger,
+.cover-zoom-trigger {
+  display:block; width:100%; padding:0; border:0; background:transparent; cursor:zoom-in;
+}
+.chapter-photo-card img { display:block; width:100%; height:auto; max-height:48vh; object-fit:contain; }
+.chapter-photo-card figcaption {
+  display:block !important; margin:8px 2px 0 !important; color:#766047 !important;
+  font: .88rem/1.35 'Cormorant Garamond',serif !important; text-align:center !important;
+}
+.cover-zoom-trigger { max-width:100%; }
+.cover-zoom-trigger .intro-cover { cursor:zoom-in; }
+.spacebound-image-lightbox {
+  position:fixed; inset:0; z-index:12000; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:12px; padding:4vh 4vw;
+  background:rgba(17,12,8,.94); cursor:zoom-out;
+}
+.spacebound-image-lightbox .lightbox-image {
+  display:block; max-width:92vw; max-height:86vh; width:auto; height:auto;
+  object-fit:contain; background:#fff; padding:12px; box-shadow:0 18px 60px #0009; cursor:default;
+}
+.spacebound-image-lightbox p { margin:0; color:#f1e3cb; font:.9rem 'Cormorant Garamond',serif; text-align:center; }
+.spacebound-image-lightbox .lightbox-close {
+  position:absolute; top:18px; right:24px; width:42px; height:42px; border:1px solid #d8c29e;
+  border-radius:50%; color:#f5e8d1; background:#392719; font-size:1.8rem; cursor:pointer;
+}
+.book-closing-overlay { z-index:11000 !important; opacity:1 !important; background:#d9c9a8 !important; }
+.book-closing-overlay .opening-page-left { background:#17120e !important; }
+.book-closing-overlay .opening-page-right { background:#d9c9a8 !important; }
+.book-closing-overlay .opening-cover {
+  z-index:9 !important; left:0 !important; right:auto !important; width:50% !important;
+  transform-origin:left center !important; transform:rotateY(-180deg) !important;
+  animation:spaceboundRealBookClose .78s cubic-bezier(.42,0,.2,1) forwards !important;
+  background:linear-gradient(90deg,#402719 0%,#795039 14%,#a27651 52%,#71472e 100%) !important;
+}
+.book-closing-overlay .opening-cover:before { content:'' !important; }
+.book-closing-overlay .opening-cover:after { content:'' !important; }
+@keyframes spaceboundRealBookClose {
+  from { transform:rotateY(-180deg); }
+  to { transform:rotateY(0deg); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .chapter-continuation-page .chapter-heading-continuation { animation:none !important; }
+  .book-closing-overlay .opening-cover { animation-duration:.01ms !important; }
+}
+
+
+/* =========================================================
+   REVISED READER LAYOUT — NOV 2026
+   ========================================================= */
+
+/* The mission-cover component is enlarged as a complete card,
+   with a clean white mat and caption background. */
+.intro-main { grid-template-columns:minmax(230px,.48fr) minmax(0,1fr) !important; }
+.intro-cover-wrap {
+  width:clamp(240px,25vw,340px) !important;
+  max-width:100% !important;
+  justify-self:center !important;
+  align-self:center !important;
+  box-sizing:border-box !important;
+  padding:12px !important;
+  gap:0 !important;
+  background:#fffdf7 !important;
+  border:1px solid rgba(74,53,32,.42) !important;
+  box-shadow:0 14px 32px rgba(49,34,20,.24) !important;
+}
+.intro-cover-wrap .cover-zoom-trigger {
+  width:100% !important;
+  max-width:none !important;
+  padding:8px 8px 0 !important;
+  box-sizing:border-box !important;
+  background:#29231e !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.intro-cover-wrap .intro-cover {
+  width:100% !important;
+  height:clamp(230px,39vh,390px) !important;
+  object-fit:cover !important;
+  background:#fffdf7 !important;
+}
+.intro-cover-caption {
+  width:100% !important;
+  max-width:none !important;
+  box-sizing:border-box !important;
+  padding:14px 8px 12px !important;
+  background:#fffdf7 !important;
+  color:#63472d !important;
+  text-align:center !important;
+}
+
+/* No vertical document/page scrolling in reader mode. */
+html:has(body.is-reader), body.is-reader {
+  height:100% !important;
+  overflow:hidden !important;
+}
+body.is-reader #app,
+body.is-reader .immersive-reader,
+body.is-reader .reader-viewport,
+body.is-reader .reader-track,
+body.is-reader .reader-panel {
+  overflow:hidden !important;
+}
+.chapter-reading-inner,
+.chapter-reading-copy,
+.chapter-body {
+  overflow:hidden !important;
+  scrollbar-width:none !important;
+}
+.chapter-reading-inner::-webkit-scrollbar,
+.chapter-reading-copy::-webkit-scrollbar,
+.chapter-body::-webkit-scrollbar { display:none !important; }
+
+/* First page of each chapter: restore the original brown title rail
+   and right-hand reading surface. */
+.chapter-panel.chapter-opening-page {
+  display:grid !important;
+  grid-template-columns:minmax(220px,.34fr) minmax(0,1fr) !important;
+  grid-template-rows:minmax(0,1fr) !important;
+  padding:clamp(18px,3vh,38px) clamp(18px,4vw,58px) !important;
+  gap:clamp(16px,2.5vw,34px) !important;
+}
+.chapter-panel.chapter-opening-page .chapter-heading {
+  position:relative !important;
+  inset:auto !important;
+  width:auto !important;
+  height:100% !important;
+  transform:none !important;
+  grid-column:1 !important;
+  grid-row:1 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  justify-content:center !important;
+  padding:clamp(22px,3.5vw,52px) !important;
+  margin:0 !important;
+  background:linear-gradient(110deg,#634a31 0%,#7a6248 100%) !important;
+  color:#f5e8cf !important;
+  text-align:left !important;
+  border:0 !important;
+}
+.chapter-panel.chapter-opening-page .chapter-heading h2 {
+  display:block !important;
+  padding:0 !important;
+  margin:6px 0 12px !important;
+  background:transparent !important;
+  color:#f7ead1 !important;
+  font:500 clamp(2rem,3.5vw,4rem)/1 'Cormorant Garamond',serif !important;
+  text-align:left !important;
+}
+.chapter-panel.chapter-opening-page .chapter-heading .page-kicker,
+.chapter-panel.chapter-opening-page .chapter-heading .chapter-rail-caption,
+.chapter-panel.chapter-opening-page .chapter-heading .chapter-rail-rule {
+  display:block !important;
+  color:#e6c997 !important;
+}
+.chapter-panel.chapter-opening-page .chapter-reading-surface {
+  grid-column:2 !important;
+  grid-row:1 !important;
+  position:relative !important;
+  inset:auto !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  padding:clamp(12px,2vw,28px) !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+/* Second and later pages: title moves to the top centre.
+   The reading area has no border or card outline. */
+.chapter-panel.chapter-title-docked {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  grid-template-rows:auto minmax(0,1fr) !important;
+  gap:clamp(12px,2vh,24px) !important;
+  padding:clamp(14px,2.5vh,28px) clamp(18px,5vw,76px) !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading {
+  position:relative !important;
+  inset:auto !important;
+  left:auto !important; right:auto !important; top:auto !important; bottom:auto !important;
+  grid-column:1 !important; grid-row:1 !important;
+  width:100% !important; height:auto !important;
+  transform:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  padding:8px 12px !important;
+  margin:0 auto !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  animation:chapterTitleMoveToTop .72s cubic-bezier(.2,.72,.18,1) both !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2 {
+  display:inline-block !important;
+  margin:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+  color:#493522 !important;
+  font:500 clamp(1.35rem,2.4vw,2.5rem)/1.1 'Cormorant Garamond',serif !important;
+  text-align:center !important;
+  text-shadow:none !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,
+.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption {
+  display:none !important;
+}
+@keyframes chapterTitleMoveToTop {
+  from { opacity:0; transform:translate3d(0,34px,0) scale(1.08); }
+  to   { opacity:1; transform:translate3d(0,0,0) scale(1); }
+}
+.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  grid-column:1 !important; grid-row:2 !important;
+  position:relative !important;
+  inset:auto !important; left:auto !important; right:auto !important;
+  top:auto !important; bottom:auto !important;
+  width:100% !important; height:100% !important; min-height:0 !important;
+  padding:clamp(8px,1.5vw,20px) !important;
+  background:transparent !important;
+  border:0 !important; outline:0 !important; box-shadow:none !important;
+  overflow:hidden !important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-inner {
+  display:grid !important;
+  grid-template-columns:minmax(210px,.42fr) minmax(0,1fr) !important;
+  align-items:center !important;
+  gap:clamp(18px,3vw,42px) !important;
+  width:100% !important; max-width:1500px !important;
+  height:100% !important; max-height:100% !important;
+  margin:0 auto !important; padding:8px !important;
+  overflow:hidden !important; background:transparent !important;
+}
+
+/* Chapter opening spread keeps the same readable photo/text balance. */
+.chapter-panel.chapter-opening-page .chapter-reading-inner {
+  display:grid !important;
+  grid-template-columns:minmax(190px,.42fr) minmax(0,1fr) !important;
+  align-items:center !important;
+  gap:clamp(16px,2.5vw,32px) !important;
+  width:100% !important; height:100% !important; max-height:100% !important;
+  overflow:hidden !important; background:transparent !important;
+}
+.chapter-panel .chapter-photo-card {
+  background:#fffdf7 !important;
+  border:8px solid #29231e !important;
+  border-bottom:0 !important;
+  padding:8px 8px 0 !important;
+  box-shadow:0 12px 26px rgba(45,31,18,.2) !important;
+}
+.chapter-panel .chapter-photo-card img {
+  width:100% !important;
+  max-height:42vh !important;
+  object-fit:cover !important;
+  background:#fffdf7 !important;
+}
+.chapter-panel .chapter-photo-card figcaption {
+  background:#fffdf7 !important;
+  color:#63472d !important;
+  padding:12px 8px 14px !important;
+  text-align:center !important;
+}
+
+/* One equipment item per page; image and entire information card use a white
+   print background. Long descriptions continue on another horizontal page. */
+.equipment-single {
+  width:min(100%,1100px) !important;
+  max-height:100% !important;
+  margin:0 auto !important;
+  padding:clamp(14px,2vw,26px) !important;
+  box-sizing:border-box !important;
+  background:#fffdf7 !important;
+  color:#493b2a !important;
+  overflow:hidden !important;
+}
+.equipment-single .equipment-card-heading {
+  text-align:center !important;
+  padding-bottom:12px !important;
+  margin-bottom:14px !important;
+  border-bottom:1px solid #b69a72 !important;
+}
+.equipment-single .equipment-card-heading h3 {
+  margin:0 0 5px !important;
+  color:#493321 !important;
+  font:500 clamp(1.4rem,2.2vw,2.1rem)/1.1 'Cormorant Garamond',serif !important;
+}
+.equipment-single .equipment-card-heading span {
+  color:#896b48 !important;
+  font-size:.76rem !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+}
+.equipment-single .equipment-photo {
+  width:min(100%,520px) !important;
+  margin:14px auto !important;
+  padding:9px 9px 0 !important;
+  background:#29231e !important;
+  box-sizing:border-box !important;
+}
+.equipment-single .equipment-photo img {
+  display:block !important;
+  width:100% !important;
+  max-height:32vh !important;
+  object-fit:contain !important;
+  background:#fffdf7 !important;
+}
+.equipment-single p {
+  color:#493b2a !important;
+  font:clamp(1rem,1.45vw,1.25rem)/1.6 'Cormorant Garamond',serif !important;
+  margin:12px 0 !important;
+}
+.equipment-single .equipment-meta {
+  display:flex !important;
+  justify-content:center !important;
+  flex-wrap:wrap !important;
+  gap:8px 18px !important;
+  padding-top:12px !important;
+  border-top:1px solid #cbb998 !important;
+  color:#806447 !important;
+  font:.72rem 'DM Sans',sans-serif !important;
+}
+.chapter-panel.chapter-title-docked .chapter-reading-inner.text-only,
+.chapter-panel.chapter-opening-page .chapter-reading-inner.text-only {
+  display:flex !important;
+  justify-content:center !important;
+}
+.chapter-panel .chapter-reading-copy {
+  max-height:100% !important;
+  overflow:hidden !important;
+}
+.chapter-panel .chapter-reading-copy h1,
+.chapter-panel .chapter-body {
+  overflow-wrap:anywhere !important;
+  max-width:100% !important;
+}
+@media(max-width:760px) {
+  .intro-main { grid-template-columns:minmax(0,1fr) !important; }
+  .intro-cover-wrap { width:min(100%,310px) !important; }
+  .chapter-panel.chapter-opening-page { grid-template-columns:minmax(130px,.35fr) minmax(0,1fr) !important; padding:10px !important; gap:8px !important; }
+  .chapter-panel.chapter-opening-page .chapter-heading { padding:12px !important; }
+  .chapter-panel.chapter-opening-page .chapter-heading h2 { font-size:1.5rem !important; }
+  .chapter-panel.chapter-opening-page .chapter-reading-inner,
+  .chapter-panel.chapter-title-docked .chapter-reading-inner { grid-template-columns:minmax(110px,.36fr) minmax(0,1fr) !important; gap:8px !important; padding:4px !important; }
+  .equipment-single { padding:10px !important; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .chapter-panel.chapter-title-docked .chapter-heading { animation:none !important; }
+}
+
+/* =========================================================
+   USER REVISION — PHOTO, CHAPTER PAGES AND BOOK TRANSITIONS
+   ========================================================= */
+
+/* Opening book: dark left page; lighter walnut front cover on the right. */
+.book-opening-overlay:not(.book-closing-overlay) .opening-page-left {
+  background:linear-gradient(90deg,#17120e 0%,#24170f 60%,#302015 100%) !important;
+  box-shadow:inset -18px 0 28px rgba(0,0,0,.42) !important;
+}
+.book-opening-overlay:not(.book-closing-overlay) .opening-page-right {
+  background:#d9c9a8 !important;
+}
+.book-opening-overlay:not(.book-closing-overlay) .opening-cover {
+  background:linear-gradient(105deg,#68432c 0%,#956746 48%,#795039 100%) !important;
+}
+
+/* Mission cover: simple white photo mount and caption; no extra framing. */
+.intro-cover-wrap {
+  width:min(100%,330px) !important;
+  padding:14px !important;
+  gap:0 !important;
+  background:#fff !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:0 10px 28px rgba(45,31,18,.13) !important;
+}
+.intro-cover-wrap .cover-zoom-trigger {
+  display:block !important;
+  width:100% !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:#fff !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+.intro-cover-wrap .intro-cover {
+  display:block !important;
+  width:100% !important;
+  height:clamp(210px,42vh,390px) !important;
+  max-height:46vh !important;
+  object-fit:cover !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+  background:#fff !important;
+}
+.intro-cover-wrap .intro-cover-caption {
+  display:block !important;
+  width:100% !important;
+  padding:15px 5px 7px !important;
+  margin:0 !important;
+  background:#fff !important;
+  color:#63472d !important;
+  text-align:center !important;
+  font:600 .72rem 'DM Sans',sans-serif !important;
+  letter-spacing:.18em !important;
+}
+
+/* No slide/fade effect between reader pages. Keep the exact same layout. */
+.reader-track { transition:none !important; }
+.reader-panel.enter-from-right,
+.reader-panel.enter-from-left { animation:none !important; }
+
+/* First page of a chapter retains the original brown title rail. */
+.chapter-panel.chapter-opening-page .chapter-heading {
+  background:linear-gradient(110deg,#634a31 0%,#7a6248 100%) !important;
+}
+
+/* Continuation pages: category title sits in a matching brown title strip. */
+.chapter-panel.chapter-title-docked .chapter-heading {
+  min-height:48px !important;
+  width:min(100%,1100px) !important;
+  padding:8px 22px !important;
+  background:linear-gradient(110deg,#634a31 0%,#7a6248 100%) !important;
+  border:0 !important;
+  box-shadow:none !important;
+  animation:none !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2 {
+  color:#f7ead1 !important;
+  background:transparent !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+
+/* All content pages use the parchment canvas, not white cards/panels. */
+.chapter-panel .chapter-reading-surface,
+.chapter-panel .chapter-reading-inner,
+.chapter-panel .chapter-reading-copy {
+  background:#d9c9a8 !important;
+  border:0 !important;
+  outline:0 !important;
+  box-shadow:none !important;
+}
+.chapter-panel .equipment-single,
+.chapter-panel .equipment-continuation {
+  background:transparent !important;
+  color:#493b2a !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:clamp(12px,2vw,26px) !important;
+}
+.chapter-panel .equipment-single .equipment-card-heading {
+  background:transparent !important;
+}
+.chapter-panel .equipment-single .equipment-photo {
+  background:#fff !important;
+}
+
+/* No vertical page/document scrolling in reader mode. */
+html:has(body.is-reader),
+body.is-reader,
+body.is-reader #app,
+body.is-reader .immersive-reader,
+body.is-reader .reader-viewport,
+body.is-reader .reader-track,
+body.is-reader .reader-panel,
+body.is-reader .chapter-reading-inner,
+body.is-reader .chapter-reading-copy,
+body.is-reader .chapter-body {
+  overflow:hidden !important;
+}
+
+/* Closing state: parchment pages LEFT; plain walnut cover RIGHT.
+   Cover rotates into the closed position; pseudo-elements are suppressed. */
+.book-closing-overlay {
+  position:fixed !important;
+  inset:0 !important;
+  z-index:12000 !important;
+  display:block !important;
+  opacity:1 !important;
+  background:#d9c9a8 !important;
+  perspective:2200px !important;
+  pointer-events:none !important;
+}
+.book-closing-overlay .opening-book {
+  position:absolute !important;
+  inset:0 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  background:#d9c9a8 !important;
+  transform-style:preserve-3d !important;
+}
+.book-closing-overlay .opening-page-left {
+  position:absolute !important;
+  inset:0 auto 0 0 !important;
+  width:50% !important;
+  background:#d9c9a8 !important;
+  box-shadow:inset -10px 0 18px rgba(75,52,29,.12) !important;
+}
+.book-closing-overlay .opening-page-right {
+  position:absolute !important;
+  inset:0 0 0 auto !important;
+  width:50% !important;
+  background:#d9c9a8 !important;
+}
+.book-closing-overlay .closing-cover {
+  position:absolute !important;
+  z-index:10 !important;
+  top:0 !important; right:0 !important; bottom:0 !important; left:auto !important;
+  width:50% !important; height:100% !important;
+  transform:rotateY(-180deg) !important;
+  transform-origin:left center !important;
+  transform-style:preserve-3d !important;
+  backface-visibility:hidden !important;
+  background:linear-gradient(105deg,#3a2418 0%,#68432c 17%,#956746 54%,#5b3824 100%) !important;
+  border:0 !important;
+  border-left:4px solid rgba(28,17,10,.78) !important;
+  border-radius:3px 0 0 3px !important;
+  box-shadow:inset 13px 0 20px rgba(255,231,190,.13),inset -14px 0 24px rgba(0,0,0,.34),-15px 0 38px rgba(0,0,0,.48) !important;
+  animation:none !important;
+}
+.book-closing-overlay .closing-cover::before,
+.book-closing-overlay .closing-cover::after {
+  content:none !important;
+  display:none !important;
+}
+.book-closing-overlay.book-closing-active .closing-cover {
+  transform:rotateY(0deg) !important;
+  transition:transform .82s cubic-bezier(.42,0,.2,1) !important;
+}
+@media(prefers-reduced-motion:reduce) {
+  .book-closing-overlay.book-closing-active .closing-cover { transition-duration:.01ms !important; }
+}
+
+
+/* ==========================================================
+   VISUAL REFINEMENTS — latest screenshot feedback
+========================================================== */
+
+/* 1. Enlarge the image viewer without cropping the photograph. */
+.spacebound-image-lightbox {
+  padding: 2vh 2vw !important;
+  gap: 10px !important;
+}
+.spacebound-image-lightbox .lightbox-image {
+  width: auto !important;
+  height: auto !important;
+  max-width: 97vw !important;
+  max-height: 91vh !important;
+  padding: 10px !important;
+  object-fit: contain !important;
+}
+.spacebound-image-lightbox p {
+  max-width: 94vw;
+  font-size: clamp(.9rem, 1.25vw, 1.15rem) !important;
+}
+
+/* 2–3. Wider chapter title rail; keep category headings on one line. */
+.chapter-panel.chapter-opening-page {
+  grid-template-columns: minmax(320px, .46fr) minmax(0, 1fr) !important;
+  gap: clamp(18px, 2.2vw, 34px) !important;
+}
+.chapter-panel.chapter-opening-page .chapter-heading h2 {
+  width: 100% !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  font-size: clamp(1.05rem, 2.05vw, 2rem) !important;
+  letter-spacing: -.015em !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2 {
+  white-space: nowrap !important;
+  max-width: 100% !important;
+  font-size: clamp(1.15rem, 2.35vw, 2.35rem) !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading {
+  width: min(100%, 1120px) !important;
+  min-height: 54px !important;
+  padding: 9px 22px !important;
+  background: linear-gradient(110deg,#634a31 0%,#7a6248 100%) !important;
+}
+.chapter-panel.chapter-title-docked .chapter-heading h2 {
+  color: #f7ead1 !important;
+}
+@media (max-width: 760px) {
+  .chapter-panel.chapter-opening-page {
+    grid-template-columns: minmax(220px, .42fr) minmax(0, 1fr) !important;
+  }
+  .chapter-panel.chapter-opening-page .chapter-heading h2 {
+    font-size: clamp(.95rem, 3vw, 1.4rem) !important;
+  }
+}
+
+/* 4. Sources heading and ornament share a centred axis; entries align to numbers. */
+.chapter-panel.chapter-opening-page .chapter-reading-copy:has(.source-list) {
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+}
+.chapter-panel.chapter-opening-page .chapter-reading-copy:has(.source-list) > h1,
+.chapter-panel.chapter-opening-page .chapter-reading-copy:has(.source-list) > .intro-rule {
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.chapter-panel .source-list {
+  display: block !important;
+  width: min(100%, 900px) !important;
+  margin: clamp(18px, 3vh, 34px) auto 0 !important;
+  padding: 0 0 0 2.6rem !important;
+  list-style: decimal !important;
+  list-style-position: outside !important;
+  text-align: left !important;
+}
+.chapter-panel .source-list li {
+  display: list-item !important;
+  margin: 0 0 20px !important;
+  padding: 0 0 14px 8px !important;
+  border-bottom: 1px solid rgba(125, 96, 58, .28) !important;
+  text-align: left !important;
+}
+.chapter-panel .source-list li::marker {
+  color: #654a2e !important;
+  font: 600 1rem 'DM Sans', sans-serif !important;
+}
+.chapter-panel .source-entry {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 5px !important;
+  text-align: left !important;
+}
+.chapter-panel .source-entry strong,
+.chapter-panel .source-entry span,
+.chapter-panel .source-entry a {
+  display: block !important;
+  text-align: left !important;
+}
+
+/* 5. Equipment item name appears only once, in its equipment card heading. */
+.chapter-reading-copy.hide-content-title > h1,
+.chapter-reading-copy.hide-content-title > .intro-rule {
+  display: none !important;
+}
+.chapter-panel .equipment-single .equipment-card-heading h3 {
+  margin-top: 0 !important;
+}
+
+/* 6. Every in-book photograph uses the same white mount and caption treatment
+      as the mission cover; no heavy black frame or white content card. */
+.chapter-panel .chapter-photo-card,
+.chapter-panel .equipment-photo {
+  width: min(100%, 520px) !important;
+  margin: 0 auto !important;
+  padding: 12px 12px 0 !important;
+  background: #fff !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: 0 10px 28px rgba(45,31,18,.13) !important;
+  box-sizing: border-box !important;
+}
+.chapter-panel .chapter-photo-card .image-zoom-trigger {
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #fff !important;
+}
+.chapter-panel .chapter-photo-card img,
+.chapter-panel .equipment-photo img {
+  display: block !important;
+  width: 100% !important;
+  height: clamp(180px, 34vh, 340px) !important;
+  max-height: 38vh !important;
+  object-fit: contain !important;
+  background: #fff !important;
+}
+.chapter-panel .chapter-photo-card figcaption,
+.chapter-panel .equipment-photo figcaption {
+  display: block !important;
+  width: 100% !important;
+  min-height: 42px !important;
+  margin: 0 !important;
+  padding: 13px 6px 9px !important;
+  background: #fff !important;
+  color: #63472d !important;
+  text-align: center !important;
+  font: 500 clamp(.85rem, 1.1vw, 1.05rem)/1.3 'Cormorant Garamond', serif !important;
+}
+
+/* 7. Smooth horizontal page swipes; no opacity/fade effects on page content. */
+.reader-track {
+  transition: transform .62s cubic-bezier(.22,.72,.18,1) !important;
+  will-change: transform !important;
+}
+.reader-panel,
+.reader-panel.is-active {
+  opacity: 1 !important;
+  animation: none !important;
+}
+.reader-panel.enter-from-left,
+.reader-panel.enter-from-right {
+  animation: none !important;
+}
+
+/* 8. Closing cover starts folded behind the LEFT page, then swings to the
+      RIGHT. The visible right-hand exterior is plain walnut with no lettering. */
+.book-closing-overlay .opening-page-left {
+  background: #d9c9a8 !important;
+  box-shadow: inset -12px 0 20px rgba(75,52,29,.12) !important;
+}
+.book-closing-overlay .opening-page-right {
+  background: #d9c9a8 !important;
+}
+.book-closing-overlay .closing-cover {
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: 50% !important;
+  transform: rotateY(-180deg) !important;
+  transform-origin: left center !important;
+  background: linear-gradient(105deg,#3a2418 0%,#68432c 17%,#956746 54%,#5b3824 100%) !important;
+  backface-visibility: hidden !important;
+}
+.book-closing-overlay .closing-cover::before,
+.book-closing-overlay .closing-cover::after {
+  content: none !important;
+  display: none !important;
+}
+.book-closing-overlay.book-closing-active .closing-cover {
+  transform: rotateY(0deg) !important;
+  transition: transform .88s cubic-bezier(.42,0,.2,1) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reader-track,
+  .book-closing-overlay.book-closing-active .closing-cover {
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* Latest refinements: static page changes, consistent chapter-title panels,
+   tighter photo/caption spacing, and a right-to-left closing cover. */
+.reader-track {
+  transition: none !important;
+  will-change: auto !important;
+}
+.reader-panel,
+.reader-panel.is-active {
+  transition: none !important;
+  animation: none !important;
+}
+.reader-panel.enter-from-left,
+.reader-panel.enter-from-right {
+  animation: none !important;
+}
+
+/* Every chapter category uses one consistent title-panel width. Text wraps
+   inside the panel instead of overflowing its brown background. */
+.chapter-panel .chapter-heading {
+  box-sizing: border-box !important;
+  width: min( min(78vw, 900px), calc(100% - 36px) ) !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: clamp(10px, 2vh, 22px) auto clamp(16px, 3vh, 30px) !important;
+  padding: clamp(10px, 1.5vh, 16px) clamp(18px, 3vw, 34px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  overflow: hidden !important;
+  background: linear-gradient(105deg, #654a31, #806348) !important;
+  color: #f1e3c7 !important;
+}
+.chapter-panel .chapter-heading h2 {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #f1e3c7 !important;
+  font-size: clamp(1.05rem, 2.45vw, 2.35rem) !important;
+  line-height: 1.12 !important;
+  text-align: center !important;
+  text-wrap: balance !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+.chapter-panel .chapter-heading .page-kicker,
+.chapter-panel .chapter-heading .chapter-rail-rule,
+.chapter-panel .chapter-heading .chapter-rail-caption {
+  color: #e6c995 !important;
+  margin: 0 !important;
+}
+.chapter-panel .chapter-heading .page-kicker {
+  font-size: clamp(.58rem, .8vw, .78rem) !important;
+  letter-spacing: .16em !important;
+}
+
+/* Remove the oversized blank gap between a photograph and its caption/text. */
+.chapter-panel .chapter-reading-inner.has-section-photo {
+  gap: clamp(8px, 1.2vh, 14px) !important;
+  row-gap: clamp(8px, 1.2vh, 14px) !important;
+  align-content: start !important;
+}
+.chapter-panel .chapter-photo-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0 !important;
+  margin: 0 auto !important;
+  padding: 8px 8px 0 !important;
+}
+.chapter-panel .chapter-photo-card .image-zoom-trigger {
+  line-height: 0 !important;
+}
+.chapter-panel .chapter-photo-card img {
+  display: block !important;
+  margin: 0 !important;
+}
+.chapter-panel .chapter-photo-card figcaption {
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 5px 6px 6px !important;
+}
+.chapter-panel .chapter-reading-copy {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Closing: start with the plain walnut cover lying on the RIGHT page.
+   It rotates around the centre spine from right to left, covering the pages. */
+.book-closing-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  display: grid !important;
+  place-items: center !important;
+  perspective: 2200px !important;
+  background: #d9c9a8 !important;
+  opacity: 1 !important;
+}
+.book-closing-overlay .opening-book {
+  position: relative !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  perspective: 2200px !important;
+  transform-style: preserve-3d !important;
+  overflow: visible !important;
+}
+.book-closing-overlay .opening-page-left,
+.book-closing-overlay .opening-page-right {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 50% !important;
+  background: #d9c9a8 !important;
+  box-shadow: none !important;
+}
+.book-closing-overlay .opening-page-left {
+  left: 0 !important;
+  right: auto !important;
+  z-index: 1 !important;
+}
+.book-closing-overlay .opening-page-right {
+  right: 0 !important;
+  left: auto !important;
+  z-index: 1 !important;
+}
+.book-closing-overlay .closing-cover {
+  position: absolute !important;
+  z-index: 5 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: auto !important;
+  width: 50% !important;
+  height: 100% !important;
+  transform: rotateY(0deg) !important;
+  transform-origin: left center !important;
+  transform-style: preserve-3d !important;
+  backface-visibility: visible !important;
+  background: linear-gradient(105deg, #3a2418 0%, #68432c 17%, #956746 54%, #5b3824 100%) !important;
+  border: 0 !important;
+  border-left: 4px solid rgba(28,17,10,.78) !important;
+  border-radius: 2px 0 0 2px !important;
+  box-shadow: inset 13px 0 20px rgba(255,231,190,.13),
+              inset -14px 0 24px rgba(0,0,0,.34),
+              0 0 30px rgba(0,0,0,.24) !important;
+  animation: none !important;
+}
+.book-closing-overlay .closing-cover::before,
+.book-closing-overlay .closing-cover::after {
+  content: none !important;
+  display: none !important;
+}
+.book-closing-overlay.book-closing-active .closing-cover {
+  transform: rotateY(-180deg) !important;
+  transition: transform .95s cubic-bezier(.42,0,.2,1) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .book-closing-overlay.book-closing-active .closing-cover {
+    transition-duration: .01ms !important;
+  }
+}
+
+
+/* =========================================================
+   V4 REFINEMENTS — consistent chapter headers, adaptive
+   photo mounts, and closing-cover colour only.
+   ========================================================= */
+
+/* Every chapter page gets the same wide heading panel.
+   The panel grows vertically with wrapped text; it never clips words. */
+.chapter-panel .chapter-heading {
+  box-sizing: border-box !important;
+  width: min(94%, 1200px) !important;
+  max-width: min(94%, 1200px) !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: clamp(12px, 2vh, 24px) auto clamp(18px, 3vh, 32px) !important;
+  padding: clamp(12px, 1.8vh, 20px) clamp(20px, 3vw, 42px) !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+.chapter-panel .chapter-heading h2 {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  text-align: center !important;
+  line-height: 1.14 !important;
+  text-wrap: balance !important;
+  font-size: clamp(1.05rem, 2.35vw, 2.3rem) !important;
+}
+.chapter-panel .chapter-heading .chapter-rail-rule {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  margin: 8px auto 0 !important;
+}
+.chapter-panel .chapter-heading .page-kicker,
+.chapter-panel .chapter-heading .chapter-rail-caption {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+/* Photo mounts size to the image's intrinsic proportions.
+   Keep the image uncropped; the white mount hugs the photo and caption. */
+.chapter-panel .chapter-photo-card,
+.chapter-panel .equipment-photo {
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex: 0 1 auto !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  width: fit-content !important;
+  max-width: min(92%, 820px) !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  padding: 12px 12px 0 !important;
+  gap: 0 !important;
+  background: #fff !important;
+  border: 0 !important;
+  overflow: visible !important;
+}
+.chapter-panel .chapter-photo-card .image-zoom-trigger {
+  display: block !important;
+  flex: 0 1 auto !important;
+  width: fit-content !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  line-height: 0 !important;
+  background: #fff !important;
+}
+.chapter-panel .chapter-photo-card img,
+.chapter-panel .equipment-photo img {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 52vh !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+}
+.chapter-panel .chapter-photo-card figcaption,
+.chapter-panel .equipment-photo figcaption {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 12px 8px 10px !important;
+  background: #fff !important;
+  color: #76563a !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* The closing animation keeps exactly the same geometry and timing.
+   Only recolour the OUTER/right-facing cover to match the dark left
+   inside-cover tone used in the opening animation. */
+.book-closing-overlay .closing-cover {
+  background: linear-gradient(
+    90deg,
+    #17120e 0%,
+    #211810 76%,
+    #302216 100%
+  ) !important;
+}
+
+
+/* Mission overview cover follows the same image-proportional mount. */
+.intro-cover-wrap {
+  box-sizing: border-box !important;
+  width: fit-content !important;
+  max-width: min(92%, 520px) !important;
+  height: auto !important;
+  align-self: start !important;
+  padding: 12px 12px 0 !important;
+  gap: 0 !important;
+  background: #fff !important;
+}
+.intro-cover-wrap .cover-zoom-trigger {
+  width: fit-content !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+.intro-cover-wrap .intro-cover {
+  width: auto !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: 52vh !important;
+  object-fit: contain !important;
+}
+.intro-cover-wrap .intro-cover-caption {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 12px 8px 10px !important;
+  background: #fff !important;
+}
+
+
+/* V5 — final alignment refinements from the latest screenshots. */
+
+/* Chapter divider/title pages: centre every line as one composition.
+   The panel uses intrinsic width, capped by the viewport; long headings
+   wrap inside it, so the background always encloses the complete text. */
+.chapter-panel .chapter-heading {
+  box-sizing: border-box !important;
+  width: max-content !important;
+  max-width: min(94%, 1200px) !important;
+  min-width: min(54%, 520px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: clamp(12px, 2vh, 24px) auto clamp(18px, 3vh, 32px) !important;
+  padding: clamp(14px, 2vh, 22px) clamp(24px, 4vw, 56px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 6px !important;
+  overflow: visible !important;
+}
+.chapter-panel .chapter-heading h2 {
+  display: block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  text-align: center !important;
+  text-wrap: balance !important;
+}
+.chapter-panel .chapter-heading .page-kicker,
+.chapter-panel .chapter-heading .chapter-rail-rule,
+.chapter-panel .chapter-heading .chapter-rail-caption {
+  display: block !important;
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* Content pages: remove the pale/white content card. Centre the complete
+   content group vertically, and centre image mounts horizontally. */
+.chapter-panel .chapter-reading-surface {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: clamp(12px, 2vw, 28px) !important;
+}
+.chapter-panel .chapter-reading-inner {
+  width: min(100%, 1250px) !important;
+  max-width: 1250px !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: auto !important;
+  padding: clamp(8px, 1.5vw, 20px) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: clamp(8px, 1.3vh, 16px) !important;
+  background: transparent !important;
+}
+.chapter-panel .chapter-photo-card,
+.chapter-panel .equipment-photo {
+  align-self: center !important;
+  justify-self: center !important;
+  margin: 0 auto !important;
+}
+.chapter-panel .chapter-reading-copy,
+.chapter-panel .chapter-reading-copy .chapter-body {
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+.chapter-panel .chapter-reading-copy > :first-child { margin-top: 0 !important; }
+
+/* The mission cover mount is centred in its available intro column. */
+.intro-main {
+  align-items: center !important;
+}
+.intro-cover-wrap {
+  justify-self: center !important;
+  align-self: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.intro-cover-wrap .cover-zoom-trigger,
+.intro-cover-wrap .intro-cover {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* V6 — final screenshot alignment corrections. */
+.chapter-panel .chapter-heading {
+  box-sizing: border-box !important;
+  /* One consistent, generous width across every chapter/category page. */
+  width: min(94%, 1200px) !important;
+  max-width: min(94%, 1200px) !important;
+  min-width: 0 !important;
+  margin: clamp(12px, 2vh, 24px) auto clamp(18px, 3vh, 32px) !important;
+  padding: clamp(14px, 2vh, 22px) clamp(28px, 5vw, 76px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 8px !important;
+  overflow: visible !important;
+}
+.chapter-panel .chapter-heading h2 {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  text-wrap: balance !important;
+}
+.chapter-panel .chapter-heading .page-kicker,
+.chapter-panel .chapter-heading .chapter-rail-rule,
+.chapter-panel .chapter-heading .chapter-rail-caption {
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* Keep the photo and its accompanying copy as one centred vertical group. */
+.chapter-panel .chapter-reading-surface {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.chapter-panel .chapter-reading-inner,
+.chapter-panel .chapter-reading-inner.has-section-photo,
+.chapter-panel .chapter-reading-inner.text-only {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: min(100%, 1250px) !important;
+  max-width: 1250px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  gap: clamp(10px, 1.6vh, 20px) !important;
+}
+.chapter-panel .chapter-photo-card,
+.chapter-panel .equipment-photo {
+  display: block !important;
+  align-self: center !important;
+  justify-self: center !important;
+  margin: 0 auto !important;
+}
+.chapter-panel .chapter-reading-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  text-align: center !important;
+}
+.chapter-panel .chapter-reading-copy > h1,
+.chapter-panel .chapter-reading-copy > .intro-rule {
+  width: 100% !important;
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.chapter-panel .chapter-reading-copy > .intro-rule {
+  display: block !important;
+}
+.chapter-panel .chapter-reading-copy .chapter-body {
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+}
+
+/* The walnut front is visible at the start; its reverse is the dark
+   near-black tone visible on the inside cover at the end. Keep geometry
+   and timing untouched. */
+.book-closing-overlay .closing-cover {
+  background: transparent !important;
+  backface-visibility: visible !important;
+}
+.book-closing-overlay .closing-cover::before,
+.book-closing-overlay .closing-cover::after {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  inset: 0 !important;
+  border-radius: inherit !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  pointer-events: none !important;
+}
+.book-closing-overlay .closing-cover::before {
+  transform: rotateY(0deg) !important;
+  background: linear-gradient(105deg, #3a2418 0%, #68432c 17%, #956746 54%, #5b3824 100%) !important;
+}
+.book-closing-overlay .closing-cover::after {
+  transform: rotateY(180deg) !important;
+  background: linear-gradient(90deg, #17120e 0%, #211810 76%, #302216 100%) !important;
+}
+
+
+/* V7 — improve reading legibility and unify chapter title bands. */
+.chapter-panel .chapter-heading {
+  width: min(97%, 1500px) !important;
+  max-width: min(97%, 1500px) !important;
+  padding: clamp(16px, 2.2vh, 26px) clamp(34px, 7vw, 112px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  text-align: center !important;
+  align-items: center !important;
+}
+.chapter-panel .chapter-heading h2 {
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: auto !important;
+  font-size: clamp(1.45rem, 3.1vw, 3.15rem) !important;
+  line-height: 1.16 !important;
+}
+
+/* Keep image-led pages readable: images no longer consume nearly the full page. */
+.chapter-panel .chapter-reading-inner.has-section-photo {
+  gap: clamp(14px, 2.2vh, 24px) !important;
+}
+.chapter-panel .chapter-photo-card {
+  width: fit-content !important;
+  max-width: min(76vw, 900px) !important;
+  margin: 0 auto !important;
+  padding: clamp(10px, 1.5vw, 18px) !important;
+}
+.chapter-panel .chapter-photo-card .image-zoom-trigger {
+  width: auto !important;
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+.chapter-panel .chapter-photo-card img {
+  display: block !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: min(70vw, 820px) !important;
+  max-height: 36vh !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+}
+.chapter-panel .chapter-photo-card figcaption {
+  margin-top: 12px !important;
+  font-size: clamp(1rem, 1.25vw, 1.25rem) !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+  overflow-wrap: anywhere !important;
+}
+.chapter-panel .chapter-reading-copy,
+.chapter-panel .chapter-reading-copy .chapter-body {
+  font-size: clamp(1rem, 1.25vw, 1.3rem) !important;
+  line-height: 1.65 !important;
+}
+
+/* Closing spread colour swap only — animation geometry and timing remain unchanged.
+   At rest, the left page is walnut brown and the right page is near-black. */
+.book-closing-overlay .opening-page-left {
+  background: linear-gradient(105deg, #3a2418 0%, #68432c 17%, #956746 54%, #5b3824 100%) !important;
+}
+.book-closing-overlay .opening-page-right {
+  background: linear-gradient(90deg, #17120e 0%, #211810 76%, #302216 100%) !important;
 }

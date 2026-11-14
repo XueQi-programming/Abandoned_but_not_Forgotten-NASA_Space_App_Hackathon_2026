@@ -1,373 +1,277 @@
- .library-page{
-    max-width:1240px;
-    margin:auto;
-    padding:48px 42px 28px
-}
+/* THE SPACEBOUND LIBRARY — vintage library homepage */
+.library-page{max-width:none;margin:0;padding:0 0 34px;background:#21180f;overflow:clip}
+.library-header{min-height:470px;padding:118px 24px 58px;display:grid;place-items:center;text-align:center;background:linear-gradient(180deg,#160f0bd9,#21180f70 55%,#21180f),url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=2200&q=85') center 48%/cover no-repeat}
+.header-glass{width:min(960px,100%);padding:36px 38px 30px;text-align:center;background:rgba(31,25,19,.34);border:1px solid rgba(255,245,225,.16);border-radius:26px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 18px 55px #09060435,inset 0 1px #ffffff16}
+.eyebrow{color:#d8bd8c}
+.library-header h1{display:flex;flex-direction:column;align-items:center;gap:clamp(15px,2.2vw,28px);font:500 clamp(3.1rem,7vw,6.3rem)/.95 "Cormorant Garamond",serif;margin:20px 0 18px;color:#f4ead7;letter-spacing:.015em}
+.library-header h1 span,.library-header h1 em{display:block}
+.library-header h1 em{color:#c5a46a;font-style:italic;font-weight:400}
+.header-copy{max-width:650px;margin:0 auto;color:#d2c3aa;font:italic 1.2rem/1.5 "Cormorant Garamond",serif}
+.header-rule{display:flex;align-items:center;justify-content:center;color:var(--gold);margin-top:25px}
+.header-rule:before,.header-rule:after{content:"";width:90px;height:1px;background:#715638;margin:0 13px}
 
-.library-header{
-    text-align:center;
-    padding:26px 0 35px
-}
+/* Floating glass search and sorting bar */
+.library-stickybar{position:fixed;top:14px;right:clamp(14px,3vw,42px);z-index:1000;display:flex;align-items:center;justify-content:flex-end;padding:0;background:transparent;border:0;pointer-events:none}
+.current-category{display:none}
+.library-tools{display:flex;align-items:center;gap:10px;max-width:min(920px,calc(100vw - 28px));margin:0;justify-content:flex-end;pointer-events:auto;padding:0;background:transparent;border:0;border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none}
+.search-wrap,.library-tools select{min-height:46px;background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(245,239,228,.075));color:#fff2dd;border:1px solid rgba(255,247,230,.34);border-radius:999px;backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 1px rgba(255,255,255,.28),0 7px 22px rgba(0,0,0,.2)}
+.search-wrap{display:flex;align-items:center;gap:11px;width:min(390px,38vw);flex:0 1 390px;padding:0 17px}
+.search-wrap .search-icon{font-size:1.35rem;line-height:1;color:#e3cda4}
+.search-wrap input{width:100%;min-width:0;padding:12px 0;border:0;outline:0;background:transparent;color:#fff2dd;font:400 .86rem 'DM Sans',sans-serif}
+.search-wrap input::placeholder{color:#d4c6ae;opacity:.95}
+.library-tools select{appearance:none;-webkit-appearance:none;min-width:140px;min-height:46px;padding:0 48px 0 17px;font:400 .86rem 'DM Sans',sans-serif;color:#fff2dd;cursor:pointer;background:linear-gradient(135deg,rgba(255,255,255,.22),rgba(245,239,228,.075));background-color:rgba(245,239,228,.12);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23fff2dd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 20px center;transition:background-color .2s ease,border-color .2s ease}
+.library-tools select:hover{background-color:rgba(255,255,255,.2);border-color:rgba(255,247,230,.52)}
+.library-tools select option{background:#30251b;color:#fff2dd;padding:12px 16px}
+.library-tools select:focus-visible,.search-wrap:focus-within{outline:2px solid rgba(235,211,166,.72);outline-offset:3px}
 
-.eyebrow{
-    color:var(--gold)
-}
+/* Classic native dropdowns restored; only the closed control gets the iPhone glass finish. */
+.library-tools select{appearance:none;-webkit-appearance:none;min-width:140px;padding:0 48px 0 17px;font:400 .86rem 'DM Sans',sans-serif;color:#fff2dd;cursor:pointer;background-color:rgba(245,239,228,.12);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23fff2dd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 20px center;transition:background-color .2s ease,border-color .2s ease}
+.library-tools select:hover{background-color:rgba(255,255,255,.2);border-color:rgba(255,247,230,.52)}
+.library-tools select option{background:#30251b;color:#fff2dd;padding:12px 16px}
+.library-tools select:focus-visible,.search-wrap:focus-within{outline:2px solid rgba(235,211,166,.72);outline-offset:3px}
 
-.library-header h1{
-    font:500 clamp(3rem,7vw,5.8rem)/.95 "Cormorant Garamond",serif
-    ;margin:18px 0 14px;
-    color:#f4ead7
-}
+/* Tint the browser search-clear X to match the input text. */
+.search-wrap input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-left:10px;cursor:pointer;background-color:#fff2dd;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M3 3l10 10M13 3L3 13%27 stroke=%27black%27 stroke-width=%272%27 stroke-linecap=%27round%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Cpath d=%27M3 3l10 10M13 3L3 13%27 stroke=%27black%27 stroke-width=%272%27 stroke-linecap=%27round%27/%3E%3C/svg%3E") center/contain no-repeat}
+.status-line{max-width:none;margin:23px clamp(18px,4vw,58px);color:#b5a488;font-size:.78rem;letter-spacing:.08em}
 
-.library-header h1 em{
-    color:#c5a46a;
-    font-weight:400
-}
+/* Wide category tab beside each realistic wooden shelf */
+.shelves{display:grid;gap:44px;padding:0 clamp(18px,3.5vw,52px)}
+.shelf-section{display:grid;grid-template-columns:minmax(112px,145px) minmax(0,1fr);align-items:stretch;gap:18px;scroll-margin-top:100px;min-width:0}
+.shelf-label{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:18px 12px 26px 2px;border-right:1px solid rgba(197,164,106,.32)}
+.shelf-label h2{margin:0;color:#f0dfc1;font:600 clamp(1.8rem,2.8vw,2.65rem)/1.08 "Cormorant Garamond",serif;text-shadow:0 2px 8px #080604;overflow-wrap:anywhere}
+.shelf-label span{margin-top:13px;color:#bd9b67;font-size:.68rem;letter-spacing:.17em}
+.shelf-body{min-width:0;padding:12px 10px 18px;background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 18%,rgba(0,0,0,.12));border-radius:5px}
+.shelf-row{position:relative;display:flex;align-items:flex-end;gap:clamp(7px,1vw,15px);min-height:255px;padding:17px 17px 28px;overflow:visible;isolation:isolate}
+/* Wood grain, front fascia, rounded lip and cast shadow */
+.shelf-wood{position:absolute;z-index:0;bottom:4px;left:0;right:0;height:27px;border-radius:3px 3px 6px 6px;background:linear-gradient(180deg,#c18a4e 0%,#9a6335 12%,#704322 36%,#4d2d19 72%,#2d1a10 100%);box-shadow:0 13px 18px rgba(0,0,0,.58),inset 0 2px 2px rgba(255,224,166,.48),inset 0 -4px 5px rgba(0,0,0,.45)}
+.shelf-wood:before{content:"";position:absolute;left:0;right:0;top:4px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,220,160,.42),rgba(61,32,15,.3),rgba(255,220,160,.3),transparent)}
+.shelf-wood:after{content:"";position:absolute;left:0;right:0;bottom:5px;height:1px;background:rgba(220,167,101,.25)}
+.book-spine{position:relative;z-index:1;flex:1 1 0;min-width:52px;max-width:124px;height:clamp(165px,17vw,218px);border:0;border-left:5px solid rgba(255,255,255,.12);border-right:2px solid rgba(16,11,8,.72);border-radius:4px 5px 1px 1px;color:#f0dfbd;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 8px 13px;box-shadow:4px 3px 8px rgba(0,0,0,.65),inset 4px 0 7px rgba(255,255,255,.11),inset -4px 0 6px rgba(0,0,0,.22);transition:transform .24s ease,filter .24s ease;overflow:visible}
+.book-spine:after{content:"";position:absolute;top:0;bottom:0;left:7px;width:1px;background:rgba(255,240,206,.13);pointer-events:none}
+.book-spine:hover,.book-spine:focus-visible{transform:translateY(-13px) scale(1.045);filter:brightness(1.18);z-index:12;outline:1px solid #d3b47d}
+.spine-0{background:linear-gradient(90deg,#321b13,#70432f 18%,#936346 47%,#633a28 82%,#382016)}
+.spine-1{background:linear-gradient(90deg,#192b29,#35534a 18%,#55796a 48%,#36584e 82%,#1c302c)}
+.spine-2{background:linear-gradient(90deg,#403019,#806039 18%,#aa8650 48%,#76552e 82%,#44301b)}
+.spine-3{background:linear-gradient(90deg,#25243a,#494765 18%,#777295 48%,#504d70 82%,#29273e)}
+.spine-4{background:linear-gradient(90deg,#3d1c1c,#713632 18%,#a75d52 48%,#783b36 82%,#421e1c)}
+.spine-5{background:linear-gradient(90deg,#202d3b,#40566c 18%,#68839a 48%,#40566c 82%,#263747)}
+.spine-mark{font-size:.85rem;color:#e0c58e;text-shadow:0 1px 3px #21180f}
+.spine-title{font:600 1.04rem/1.15 "Cormorant Garamond",serif;writing-mode:vertical-rl;transform:rotate(180deg);max-height:145px;overflow:hidden;text-align:center;text-shadow:0 1px 2px #21180f}
+.spine-subtitle{font-size:.48rem;letter-spacing:.12em;white-space:nowrap;max-width:100%;overflow:hidden;color:#ead9b9}
 
-.header-copy{
-    color:#c2b39b;
-    font:italic 1.1rem "Cormorant Garamond",serif
-}
+/* Hover card opens to the right; only the far-right book flips left */
+.book-tooltip{position:absolute;display:flex;gap:15px;left:calc(100% + 15px);right:auto;bottom:12px;width:350px;max-width:min(350px,calc(100vw - 30px));padding:13px;background:rgba(247,241,229,.97);color:#30271d;border:1px solid rgba(255,255,255,.8);border-radius:8px;box-shadow:0 15px 38px rgba(0,0,0,.48);opacity:0;visibility:hidden;transform:translateX(-8px);transition:opacity .2s,transform .2s,visibility .2s;pointer-events:none;text-align:left}
+.book-spine:hover .book-tooltip,.book-spine:focus-visible .book-tooltip{opacity:1;visibility:visible;transform:translateX(0)}
+.book-tooltip.tooltip-left{left:auto;right:calc(100% + 15px);transform:translateX(8px)}
+.book-spine:hover .book-tooltip.tooltip-left,.book-spine:focus-visible .book-tooltip.tooltip-left{transform:translateX(0)}
+.tooltip-image{width:108px;min-width:108px;height:130px;background:#d9c9ae;display:grid;place-items:center;overflow:hidden;border-radius:3px}
+.tooltip-image img{width:100%;height:100%;object-fit:cover}
+.placeholder-star{font-size:2rem;color:#997c50}
+.tooltip-copy{display:flex;flex-direction:column;gap:6px;min-width:0}
+.tooltip-copy strong{font:600 1.32rem/1.05 "Cormorant Garamond",serif}
+.tooltip-copy small{color:#9a7440;text-transform:uppercase;font-size:.62rem;letter-spacing:.1em}
+.tooltip-copy>span{font-size:.74rem;line-height:1.5;color:#5d5142;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tooltip-copy i{font-style:normal;font-size:.58rem;letter-spacing:.12em;color:#9a7440;margin-top:auto}
+.library-footer{text-align:center;color:#927b59;margin-top:55px;padding:0 18px}
+.library-footer span{padding:0 9px;color:var(--gold)}
 
-.header-rule{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--gold);
-    margin-top:25px
-}
+@media(max-width:900px){.shelf-section{grid-template-columns:145px minmax(0,1fr);gap:12px}.shelf-row{gap:7px;padding-left:9px;padding-right:9px}.book-spine{min-width:44px}.spine-title{font-size:.94rem}}
+@media(max-width:700px){.library-header{min-height:370px;padding:82px 16px 28px}.header-glass{padding:27px 17px;border-radius:20px}.library-header h1{font-size:clamp(2.8rem,12vw,4.2rem);gap:17px}.header-copy{font-size:1.05rem}.library-stickybar{top:8px;right:8px;left:8px;justify-content:flex-end;align-items:center;padding:0}.current-category{font-size:.66rem}.library-tools{max-width:100%;display:flex;flex-wrap:wrap;gap:6px;padding:0}.search-wrap{width:min(250px,44vw);flex:1 1 170px;min-height:40px;padding:0 12px}.search-wrap input{font-size:.75rem}.library-tools select{min-width:0;max-width:125px;min-height:40px;font-size:.68rem;padding:0 38px 0 10px;background-position:right 15px center}.shelves{padding:0 12px;gap:30px}.shelf-section{grid-template-columns:1fr;gap:7px}.shelf-label{border-right:0;border-bottom:1px solid rgba(197,164,106,.28);padding:0 3px 8px;flex-direction:row;align-items:baseline;justify-content:space-between}.shelf-label h2{font-size:1.75rem}.shelf-label span{margin:0;font-size:.58rem}.shelf-body{padding:5px 0 12px}.shelf-row{overflow-x:auto;min-height:190px;padding:12px 8px 25px;gap:8px}.book-spine{flex:0 0 76px;width:76px;height:160px}.book-tooltip-floating{left:14px!important;right:14px!important;top:auto!important;bottom:14px!important;width:auto!important;max-width:none;z-index:2001}.book-tooltip-floating .tooltip-image{width:92px;min-width:92px;height:112px}}
 
-.header-rule:before,.header-rule:after{
-    content:"";
-    width:90px;
-    height:1px;
-    background:#715638;
-    margin:0 13px
-}
 
-.library-tools{
-    display:flex;
-    gap:12px;
-    max-width:850px;
-    margin:0 auto 25px
-}
+/* Original warm cream hover card, kept interactive so the Open Volume action is clickable. */
+.book-spine > .book-tooltip{display:none!important;}
+.book-tooltip-floating{position:fixed;z-index:2000;display:flex;align-items:stretch;gap:15px;width:350px;max-width:calc(100vw - 28px);padding:13px;background:rgba(247,241,229,.98);color:#30271d;border:1px solid rgba(255,255,255,.88);border-radius:8px;box-shadow:0 15px 38px rgba(0,0,0,.48);opacity:0;visibility:hidden;transform:translateX(-7px);transition:opacity .2s ease,transform .2s ease,visibility .2s ease;pointer-events:auto;text-align:left;}
+.book-tooltip-floating.tooltip-left{transform:translateX(7px);}
+.book-tooltip-floating.tooltip-visible{opacity:1;visibility:visible;transform:translateX(0);}
+.book-tooltip-floating .tooltip-image{width:108px;min-width:108px;height:130px;background:#d9c9ae;display:grid;place-items:center;overflow:hidden;border-radius:3px;}
+.book-tooltip-floating .tooltip-image img{width:100%;height:100%;object-fit:cover;}
+.book-tooltip-floating .tooltip-copy{display:flex;flex:1;flex-direction:column;gap:6px;min-width:0;}
+.book-tooltip-floating .tooltip-copy strong{font:600 1.32rem/1.05 "Cormorant Garamond",serif;color:#30271d;}
+.book-tooltip-floating .tooltip-copy small{color:#9a7440;text-transform:uppercase;font-size:.62rem;letter-spacing:.1em;}
+.book-tooltip-floating .tooltip-copy>span{font-size:.74rem;line-height:1.5;color:#5d5142;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
+.book-tooltip-floating .tooltip-open-volume{display:inline-flex;align-items:center;gap:8px;margin-top:auto;padding:5px 0 0;border:0;background:transparent;color:#9a7440;font:600 .62rem 'DM Sans',sans-serif;letter-spacing:.12em;cursor:pointer;text-align:left;}
+.book-tooltip-floating .tooltip-open-volume:hover{color:#654526;text-decoration:underline;text-underline-offset:3px;}
+@media(max-width:700px){.book-tooltip-floating{left:14px!important;right:14px!important;top:auto!important;bottom:14px!important;width:auto!important;max-width:none;z-index:2001;}.book-tooltip-floating .tooltip-image{width:92px;min-width:92px;height:112px;}}
 
-.search-wrap{
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:#f0e6d5;
-    color:#51402b;
-    padding:0 15px;
-    border-radius:3px
-}
 
-.search-wrap span{
-    font-size:1.5rem
-}
-
-.search-wrap input{
-    width:100%;
-    border:0;
-    outline:0;
-    background:transparent;
-    padding:13px 0;
-    color:#332719
-}
-
+/* V10: restore the familiar glass select controls with the search text colour. */
 .library-tools select{
-    background:#392a1c;
-    color:#e8dcc8;
-    border:1px solid #72583a;
-    border-radius:3px;
-    padding:0 13px;
-    min-width:130px
+  color:#fff2dd !important;
+  background-color:rgba(255,246,229,.14) !important;
+  background-image:linear-gradient(135deg,rgba(255,255,255,.24),rgba(245,239,228,.07)),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23fff2dd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-position:center,right 20px center !important;
+  border:1px solid rgba(255,247,230,.38) !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.3),0 7px 22px rgba(0,0,0,.22) !important;
+  backdrop-filter:blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(180%) !important;
+}
+.library-tools select option{background:#30251b;color:#fff2dd;}
+
+/* Keep the restored cream information card anchored beside the hovered book. */
+.book-tooltip-floating{background:rgba(247,241,229,.98);color:#30271d;border:1px solid rgba(255,255,255,.88);box-shadow:0 15px 38px rgba(0,0,0,.48);}
+.book-tooltip-floating:not(.tooltip-left){transform:translateX(-7px);}
+.book-tooltip-floating.tooltip-left{transform:translateX(7px);}
+.book-tooltip-floating.tooltip-visible{transform:translateX(0);}
+
+/* Glass option popovers for destination and sorting (native selects remain the source of truth). */
+.glass-select-wrap{position:relative;display:inline-flex;min-width:140px;}
+.glass-native-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;}
+.glass-select-trigger{width:100%;min-height:46px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 17px;border:1px solid rgba(255,247,230,.38);border-radius:999px;background:linear-gradient(135deg,rgba(255,255,255,.23),rgba(245,239,228,.075));color:#fff2dd;font:400 .86rem 'DM Sans',sans-serif;backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 1px rgba(255,255,255,.3),0 7px 22px rgba(0,0,0,.22);cursor:pointer;}
+.glass-select-chevron{font-size:1.15rem;line-height:1;transition:transform .22s ease;transform-origin:center;}
+.glass-select-wrap.is-open .glass-select-chevron{transform:rotate(180deg);}
+.glass-select-menu{position:absolute;z-index:1500;top:calc(100% + 9px);left:0;right:0;display:grid;gap:3px;padding:7px;border:1px solid rgba(255,247,230,.38);border-radius:16px;background:linear-gradient(145deg,rgba(76,65,53,.82),rgba(34,28,23,.78));backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);box-shadow:0 16px 38px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.18);}
+.glass-select-menu[hidden]{display:none;}
+.glass-select-menu button{width:100%;padding:10px 12px;border:0;border-radius:10px;background:transparent;color:#fff2dd;text-align:left;font:400 .84rem 'DM Sans',sans-serif;cursor:pointer;}
+.glass-select-menu button:hover,.glass-select-menu button[aria-selected="true"]{background:rgba(255,255,255,.19);box-shadow:inset 0 1px rgba(255,255,255,.2);}
+@media(max-width:700px){.glass-select-wrap{min-width:0;max-width:125px}.glass-select-trigger{min-height:40px;padding:0 10px;font-size:.68rem;gap:7px}}
+
+
+/* V12: fixed-centre chevron rotation; floating hover card sits beside the book. */
+.library-tools select{background-position:right 20px center!important;}
+.glass-select-chevron{display:inline-block;transform-origin:50% 50%!important;transition:transform .2s ease!important;will-change:transform;}
+.glass-select-wrap.is-open .glass-select-chevron{transform:rotate(180deg)!important;}
+.book-tooltip-floating{z-index:3000;transform:translateX(0)!important;}
+.book-tooltip-floating.tooltip-visible{transform:translateX(0)!important;}
+@media(max-width:700px){.book-tooltip-floating{left:14px!important;right:14px!important;width:auto!important;}}
+
+
+/* V14: independent, stationary up/down arrow glyphs; no rotation animation. */
+.glass-select-arrows{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;width:13px;min-width:13px;height:100%;line-height:0;flex:none;color:inherit;}
+.glass-select-arrows i{display:none;font-style:normal;font-family:Arial,sans-serif;font-size:13px;font-weight:700;line-height:9px;transform:none!important;transition:none!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-down{display:block;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-up{display:block;}
+.glass-select-trigger{align-items:center;}
+
+/* Keep a visible gap between the hovered book and its information card. */
+.book-tooltip-floating:not(.tooltip-left){margin-left:0;}
+.book-tooltip-floating.tooltip-left{margin-left:0;}
+.book-tooltip-floating{transform:none!important;}
+.book-tooltip-floating.tooltip-visible{transform:none!important;}
+
+/* V15: arrow glyphs cross-fade in place; no rotation or swinging. */
+.glass-select-trigger{align-items:center!important;}
+.glass-select-arrows{position:relative!important;display:inline-block!important;width:1em!important;min-width:1em!important;height:1em!important;flex:0 0 1em!important;align-self:center!important;line-height:1!important;}
+.glass-select-arrows i{position:absolute!important;left:0;top:50%;width:100%;height:1em;display:block!important;font-family:inherit!important;font-size:inherit!important;font-weight:400!important;line-height:1!important;text-align:center;font-style:normal;transform:translateY(-50%)!important;transition:opacity .16s ease!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-down{opacity:1!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-up{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-down{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-up{opacity:1!important;}
+.book-tooltip-floating{align-items:center!important;}
+.book-tooltip-floating:not(.tooltip-left){margin-left:0!important;}
+.book-tooltip-floating.tooltip-left{margin-left:0!important;}
+
+/* V15: same-size up/down arrows cross-fade at the centre of the control. */
+.glass-select-trigger{font-size:.86rem!important;}
+.glass-select-arrows{position:relative!important;display:inline-block!important;width:1em!important;min-width:1em!important;height:1em!important;flex:0 0 1em!important;align-self:center!important;line-height:1!important;}
+.glass-select-arrows i{position:absolute!important;left:0!important;top:50%!important;width:100%!important;height:1em!important;display:block!important;font-family:inherit!important;font-size:1em!important;font-weight:400!important;line-height:1!important;text-align:center!important;font-style:normal!important;transform:translateY(-50%)!important;transition:opacity .18s ease!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-down{opacity:1!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-up{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-down{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-up{opacity:1!important;}
+.book-tooltip-floating{align-items:center!important;}
+
+
+/* V16: up/down glyphs share one fixed inline slot, centred on the label baseline. */
+.glass-select-trigger{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;}
+.glass-select-value{display:inline-flex!important;align-items:center!important;min-height:1.35em!important;line-height:1.35!important;}
+.glass-select-arrows{position:relative!important;display:inline-block!important;flex:0 0 1em!important;width:1em!important;height:1.35em!important;margin:0 2px 0 10px!important;vertical-align:middle!important;align-self:center!important;font:inherit!important;line-height:1.35!important;text-align:center!important;}
+.glass-select-arrows i{position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;font:inherit!important;font-style:normal!important;line-height:1.35!important;transform:none!important;transition:opacity .18s ease!important;}
+.glass-select-arrows .arrow-down{opacity:1!important;}
+.glass-select-arrows .arrow-up{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-down{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-up{opacity:1!important;}
+
+/* V17 refinements: subtly aligned dropdown arrows and a persistent interactive volume link. */
+.glass-select-trigger{align-items:center!important;}
+.glass-select-arrows{position:relative!important;display:inline-block!important;width:1em!important;min-width:1em!important;height:1em!important;flex:0 0 1em!important;align-self:center!important;line-height:1!important;vertical-align:middle!important;}
+.glass-select-arrows i{position:absolute!important;left:0!important;top:50%!important;width:100%!important;height:1em!important;display:block!important;font-family:inherit!important;font-size:inherit!important;font-weight:400!important;line-height:1!important;text-align:center!important;font-style:normal!important;transform:translateY(-50%)!important;transition:opacity .12s ease!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-down{opacity:1!important;}
+.glass-select-wrap:not(.is-open) .glass-select-arrows .arrow-up{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-down{opacity:0!important;}
+.glass-select-wrap.is-open .glass-select-arrows .arrow-up{opacity:1!important;}
+.book-tooltip-floating .tooltip-open-volume{text-decoration:underline!important;text-decoration-thickness:1px!important;text-underline-offset:4px!important;text-decoration-color:currentColor!important;}
+.book-tooltip-floating .tooltip-open-volume span{text-decoration:inherit!important;}
+.book-tooltip-floating .tooltip-open-volume:hover{ text-decoration-thickness:2px!important; }
+
+
+/* V18 — keep the action label and arrow on one continuous underlined line. */
+.book-tooltip-floating .tooltip-open-volume{
+  display:inline-flex!important;
+  align-self:flex-start!important;
+  width:max-content!important;
+  max-width:100%!important;
+  white-space:nowrap!important;
+  text-decoration:none!important;
+  padding:5px 0 0!important;
+}
+.book-tooltip-floating .tooltip-open-volume .open-volume-label{
+  display:inline-block!important;
+  white-space:nowrap!important;
+  text-decoration:underline!important;
+  text-decoration-thickness:1px!important;
+  text-underline-offset:4px!important;
+  text-decoration-color:currentColor!important;
+}
+.book-tooltip-floating .tooltip-open-volume:hover .open-volume-label{
+  text-decoration-thickness:2px!important;
 }
 
-.status-line{
-    max-width:850px;
-    margin:0 auto 22px;
-    color:#a99b85;
-    font-size:.75rem;
-    letter-spacing:.08em
+/* =========================================================
+   SCROLLING FIX — preserve all original V1–V18 styling above
+   ========================================================= */
+html,
+body {
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.shelves{
-    display:grid;
-    gap:35px
+#app {
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
 }
 
-.shelf-section{
-    min-width:0
+.library-page {
+  min-height: 100vh;
+  height: auto;
+  overflow: visible !important;
 }
 
-.shelf-heading{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    border-bottom:1px solid #6d5235;
-    margin-bottom:14px;
-    padding-bottom:8px
+.shelves,
+.shelf-section,
+.shelf-body {
+  overflow: visible;
 }
 
-.shelf-heading h2{
-    font:500 1.8rem "Cormorant Garamond",serif;
-    color:#e9d8bb;
-    margin:0
+/* Keep book hover cards and dropdown menus from being clipped. */
+.shelf-row {
+  overflow: visible;
 }
 
-.shelf-heading span{
-    color:#9c8058
+.book-tooltip-floating,
+.glass-select-menu {
+  z-index: 3000;
 }
 
-.shelf-row{
-    position:relative;
-    display:flex;
-    align-items:flex-end;
-    gap:11px;
-    min-height:205px;
-    padding:10px 13px 18px;
-    overflow:visible
+/* On small screens, allow horizontal scrolling within each shelf only. */
+@media (max-width: 700px) {
+  .shelf-row {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
 }
 
-.shelf-wood{
-    position:absolute;
-    z-index:0;
-    bottom:4px;
-    left:0;
-    right:0;
-    height:15px;
-    background:linear-gradient(#9a6b3b,#59371f 45%,#392315);
-    border-radius:2px;
-    box-shadow:0 9px 13px #090604;pointer-events:none
+/* V29: clear hover underline for the OPEN VOLUME action. */
+.book-tooltip-floating .tooltip-open-volume {
+  text-decoration: none;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
 }
-
-.book-spine{
-    position:relative;
-    z-index:1;
-    flex:0 1 100px;
-    width:100px;
-    height:175px;
-    border:0;
-    border-left:5px solid #ffffff18;
-    border-right:2px solid #100b08aa;
-    border-radius:3px 5px 1px 1px;color:#f0dfbd;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:space-between;
-    padding:13px 8px 12px;
-    box-shadow:4px 3px 7px #0b0806aa,inset 4px 0 6px #ffffff12;
-    transition:transform .22s,filter .22s;overflow:visible
-}
-
-.book-spine:hover,.book-spine:focus-visible{
-    transform:translateY(-12px) scale(1.035);
-    filter:brightness(1.18);
-    z-index:8;
-    outline:1px solid #d3b47d
-}
-
-.spine-0{
-    background:linear-gradient(90deg,#492c20,#81513a 45%,#4b2b1e)
-    }
-    
-.spine-1{
-    background:linear-gradient(90deg,#263c3a,#42665d 45%,#263c36)
-}
-
-.spine-2{
-    background:linear-gradient(90deg,#5a4427,#9b7743 45%,#5b4024)
-}
-
-.spine-3{
-    background:linear-gradient(90deg,#34334a,#626184 45%,#33314a)
-}
-
-.spine-4{
-    background:linear-gradient(90deg,#5a2e2b,#96504a 45%,#592d29)
-}
-
-.spine-5{
-    background:linear-gradient(90deg,#344253,#59728a 45%,#303e50)
-}
-
-.spine-mark{
-    font-size:.8rem;
-    color:#d8b97d
-}
-
-.spine-title{
-    font:600 1rem/1.15 "Cormorant Garamond",serif;
-    writing-mode:vertical-rl;
-    transform:rotate(180deg);
-    max-height:118px;
-    overflow:hidden;
-    text-align:center;
-    text-shadow:0 1px 2px #21180f
-}
-
-.spine-subtitle{
-    font-size:.46rem;
-    letter-spacing:.12em;
-    white-space:nowrap;
-    max-width:100%;
-    overflow:hidden
-}
-
-.book-tooltip{
-    position:absolute;
-    display:flex;gap:15px;
-    left:calc(100% + 15px);
-    bottom:12px;
-    width:340px;
-    padding:12px;
-    background:#f5efe3ed;
-    color:#30271d;
-    border:1px solid #fff9;
-    border-radius:4px;
-    box-shadow:0 12px 35px #080604aa;
-    opacity:0;
-    visibility:hidden;
-    transform:translateX(-7px);
-    transition:.2s;
-    pointer-events:none;
-    text-align:left
-}
-
-.book-spine:hover .book-tooltip,.book-spine:focus-visible .book-tooltip{
-    opacity:1;
-    visibility:visible;
-    transform:translateX(0)
-}
-
-.book-spine:nth-last-child(-n+2) .book-tooltip{
-    left:auto;
-    right:calc(100% + 15px);
-    transform:translateX(7px)
-}
-
-.book-spine:nth-last-child(-n+2):hover .book-tooltip{
-    transform:translateX(0)
-}
-
-.tooltip-image{
-    width:105px;
-    min-width:105px;
-    height:125px;
-    background:#d9c9ae;
-    display:grid;
-    place-items:center;
-    overflow:hidden
-}
-
-.tooltip-image img{
-    width:100%;
-    height:100%;
-    object-fit:cover
-}
-
-.placeholder-star{
-    font-size:2rem;
-    color:#997c50
-}
-
-.tooltip-copy{
-    display:flex;
-    flex-direction:column;
-    gap:5px
-}
-
-.tooltip-copy strong{
-    font:600 1.25rem/1.05 "Cormorant Garamond",serif
-}
-
-.tooltip-copy small{
-    color:#9a7440;
-    text-transform:uppercase;
-    font-size:.58rem;
-    letter-spacing:.1em
-}
-
-.tooltip-copy>span{
-    font-size:.7rem;
-    line-height:1.5;
-    color:#5d5142;
-    display:-webkit-box;
-    -webkit-line-clamp:4;
-    -webkit-box-orient:vertical;
-    overflow:hidden
-}
-
-.tooltip-copy i{
-    font-style:normal;
-    font-size:.56rem;
-    letter-spacing:.12em;
-    color:#9a7440;
-    margin-top:auto
-}
-
-.library-footer{
-    text-align:center;
-    color:#806c50;
-    margin-top:55px
-}
-
-.library-footer span{
-    padding:0 9px;
-    color:var(--gold)
-}
-
-@media(
-    max-width:700px
-)
-
-{
-    .library-page{
-        padding:25px 17px
-    }
-    
-    .library-tools{
-        flex-wrap:wrap
-    }
-    
-    .search-wrap{
-        flex-basis:100%
-    }
-    
-    .library-tools select{
-        flex:1;
-        min-height:42px
-    }
-    
-    .shelf-row{
-        overflow-x:auto;
-        min-height:190px
-    }
-    
-    .book-spine{
-        flex:0 0 82px;
-        width:82px;
-        height:160px
-    }
-    
-    .book-tooltip{
-        position:fixed;
-        left:50% !important;
-        right:auto !important;
-        bottom:18px;
-        top:auto;
-        width:min(340px,calc(100vw - 28px));
-        transform:translate(-50%,10px) !important;z-index:30
-    }
-    
-    .book-spine:hover .book-tooltip{
-        transform:translate(-50%,0) !important
-    }
-    
-    .shelf-heading h2{
-        font-size:1.5rem
-    }
-
+.book-tooltip-floating .tooltip-open-volume:hover,
+.book-tooltip-floating .tooltip-open-volume:focus-visible {
+  text-decoration: underline;
 }

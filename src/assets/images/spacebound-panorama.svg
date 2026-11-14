@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 900" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#d9c9a8"/><stop offset=".52" stop-color="#eee1c5"/><stop offset="1" stop-color="#c5ae83"/></linearGradient>
+ <linearGradient id="far" x2="0" y2="1"><stop stop-color="#a6a083"/><stop offset="1" stop-color="#7d8069"/></linearGradient>
+ <linearGradient id="mid" x2="0" y2="1"><stop stop-color="#899078"/><stop offset="1" stop-color="#626e5b"/></linearGradient>
+ <linearGradient id="water" x2="0" y2="1"><stop stop-color="#b5b89e"/><stop offset="1" stop-color="#7d8c7a"/></linearGradient>
+ <linearGradient id="ground" x2="0" y2="1"><stop stop-color="#9a916e"/><stop offset="1" stop-color="#655b43"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+ <pattern id="ripples" width="180" height="34" patternUnits="userSpaceOnUse"><path d="M0 12 Q45 3 90 12 T180 12 M30 27 Q75 19 120 27 T210 27" fill="none" stroke="#eee2c7" stroke-opacity=".28" stroke-width="2"/></pattern>
+</defs>
+<rect width="2400" height="900" fill="url(#sky)"/>
+<circle cx="1180" cy="190" r="88" fill="#f4e6c8" opacity=".48" filter="url(#soft)"/>
+<path d="M0 470 Q150 300 330 425 T690 410 T1030 430 T1390 390 T1760 430 T2100 390 T2400 430 V900 H0Z" fill="url(#far)" opacity=".78"/>
+<path d="M0 530 Q170 390 350 500 T720 470 T1080 515 T1430 460 T1810 520 T2160 465 T2400 505 V900 H0Z" fill="url(#mid)"/>
+<path d="M0 610 Q250 540 480 600 T950 580 T1420 610 T1880 570 T2400 610 V900 H0Z" fill="url(#ground)" opacity=".9"/>
+<path d="M0 640 Q300 590 560 645 Q760 680 950 630 Q1190 570 1390 635 Q1630 700 1840 640 Q2110 570 2400 650 V900 H0Z" fill="url(#water)"/>
+<path d="M0 640 Q300 590 560 645 Q760 680 950 630 Q1190 570 1390 635 Q1630 700 1840 640 Q2110 570 2400 650 V900 H0Z" fill="url(#ripples)"/>
+<!-- distant handscroll villages -->
+<g fill="#6c6048" opacity=".72">
+ <path d="M260 525v-42l32-25 34 25v42h-12v-30h-42v30z M250 483l42-34 44 34-6 8-38-28-36 28z"/>
+ <path d="M1680 520v-50l38-28 42 28v50h-14v-35h-50v35z M1668 471l50-38 54 38-7 9-47-32-43 32z"/>
+ <path d="M1980 535v-35l26-20 29 20v35h-10v-24h-35v24z M1970 500l36-28 39 28-6 7-33-23-30 23z"/>
+</g>
+<!-- trees and brush, kept away from tile edges for a quiet seamless join -->
+<g fill="#4e604b" opacity=".75">
+ <path d="M520 620q-40-80 8-142q-5 56 32 70q-10-58 25-98q-8 72 20 98q-10-58 32-86q-15 73 10 158z"/>
+ <path d="M1500 640q-35-68 8-124q-4 48 28 60q-8-48 22-84q-8 60 18 83q-8-50 26-74q-12 62 8 139z"/>
+ <path d="M2200 640q-30-60 6-110q-3 42 24 54q-6-42 20-72q-7 53 16 72q-7-43 22-63q-10 54 7 119z"/>
+</g>
+<g stroke="#f0e3c7" stroke-opacity=".24" stroke-width="3" fill="none"><path d="M80 720h420 M1040 755h380 M1750 720h400"/></g>
+</svg>

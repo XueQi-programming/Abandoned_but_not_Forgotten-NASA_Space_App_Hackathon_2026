@@ -1,7 +1,6 @@
 import { supabaseClient } from '../config/supabaseClient.js';
 
 export async function getMissions() {
-  if (!supabaseClient) throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.');
   const { data, error } = await supabaseClient
     .from('missions')
     .select('mission_id,name,agency,destination,mission_type,launch_date,landing_date,end_date,final_location,main_purpose,cover_image')
@@ -11,8 +10,6 @@ export async function getMissions() {
 }
 
 export async function getMissionDetails(missionId) {
-  if (!supabaseClient) throw new Error('Supabase is not configured. Add your .env values first.');
-
   const [missionRes, chaptersRes, equipmentRes, mediaRes, sourcesRes] = await Promise.all([
     supabaseClient.from('missions').select('*').eq('mission_id', missionId).single(),
     supabaseClient.from('chapters').select('*').eq('mission_id', missionId).order('chapter_number'),
@@ -26,7 +23,7 @@ export async function getMissionDetails(missionId) {
   }
 
   const chapters = chaptersRes.data ?? [];
-  const chapterIds = chapters.map(ch => ch.chapter_id);
+  const chapterIds = chapters.map(chapter => chapter.chapter_id);
   let sections = [];
 
   if (chapterIds.length) {

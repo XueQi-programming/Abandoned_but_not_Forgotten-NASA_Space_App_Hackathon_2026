@@ -1,283 +1,124 @@
- .reader{
-    min-height:100vh;
-    padding:20px clamp(16px,4vw,55px) 25px;
-    background:radial-gradient(ellipse at 50% 10%,#4b3824,#21180f 65%)
+ .reader{min-height:100vh;padding:20px clamp(16px,4vw,55px) 25px;background:radial-gradient(ellipse at 50% 10%,#4b3824,#21180f 65%)}.reader-topbar{height:45px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #60482d}.reader-brand{font:600 .72rem "Cormorant Garamond",serif;letter-spacing:.2em;color:#b99a68}.reader-counter{color:#9d896c}.reader-stage{max-width:1320px;min-height:min(70vh,720px);margin:30px auto 20px;display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);background:#e9ddc7;color:#30271d;box-shadow:0 20px 55px #09060480;border:9px solid #6a4829;outline:1px solid #b28a54;position:relative;overflow:hidden}.scroll-art{min-height:550px;background:#d8c7a8;position:relative;display:flex;flex-direction:column;padding:20px 20px 15px;border-right:1px solid #bba98a}.art-caption,.art-bottom{color:#826c4c;text-align:center}.art-image{flex:1;display:grid;place-items:center;overflow:hidden;margin:15px 0}.art-image img{width:100%;height:100%;max-height:610px;object-fit:contain;mix-blend-mode:multiply}.art-bottom span{padding-left:10px;color:#a27b42}.art-placeholder{width:100%;height:100%;min-height:400px;display:grid;place-content:center;text-align:center;color:#987a4f;background:repeating-linear-gradient(135deg,#d9c9aa,#d9c9aa 12px,#d2c09f 12px,#d2c09f 13px)}.art-placeholder span{font-size:5rem}.art-placeholder p{letter-spacing:.3em;font-size:.65rem}.page-content{padding:clamp(25px,5vw,65px);background:linear-gradient(90deg,#e8dcc6,#f4ecdE);position:relative;overflow-y:auto;max-height:720px}.page-kicker{color:#9a7747}.page-content h1{font:500 clamp(2.4rem,4vw,4.3rem)/.95 "Cormorant Garamond",serif;margin:17px 0;color:#342719}.page-ornament{color:#b18c54;margin:20px 0 28px}.page-body{font:400 .95rem/1.85 "Cormorant Garamond",serif;color:#4c4031}.page-body p{margin:0 0 1.1em}.page-body .lead{font-size:1.22rem;line-height:1.6;color:#55442e}.mission-facts{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px;margin-top:35px}.mission-facts div{border-top:1px solid #c8b797;padding-top:8px}.mission-facts dt{font:600 .58rem "DM Sans",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#98764b}.mission-facts dd{margin:5px 0 0;font-size:1rem}.section-text{white-space:normal}.section-text p{margin-bottom:1.1em}.equipment-list section{border-top:1px solid #c8b797;padding:13px 0}.equipment-list h3{font:600 1.45rem "Cormorant Garamond",serif;margin:0}.equipment-type,.equipment-list small{font:600 .58rem "DM Sans",sans-serif;color:#9b794b;letter-spacing:.1em;text-transform:uppercase}.source-list{padding-left:20px}.source-list li{padding:0 0 17px 7px}.source-list li strong,.source-list li span,.source-list li a{display:block}.source-list li a{color:#8c6435;font:600 .7rem "DM Sans",sans-serif}.reader-controls{display:flex;align-items:center;justify-content:center;gap:14px}.reader-controls button{width:42px;height:38px;background:#38291c;color:#e9d5b4;border:1px solid #80613c;border-radius:2px;font-size:1.1rem}.reader-controls button:hover:not(:disabled){background:#6a4a2b}.reader-controls button:disabled{opacity:.3;cursor:not-allowed}.reader-controls span{min-width:70px;text-align:center;color:#c4ad87;font-size:.75rem}.reader-hint{text-align:center;color:#78664d;margin-top:13px}.reader-loading,.reader-error{padding:25px clamp(16px,4vw,55px);color:var(--paper)}.reader-error h1{font:2.8rem "Cormorant Garamond",serif}.reader-error p{color:#c2b39b}@media(max-width:800px){.reader-stage{grid-template-columns:1fr;min-height:0}.scroll-art{min-height:260px;height:34vh;border-right:0;border-bottom:1px solid #bba98a}.art-image img{max-height:30vh}.page-content{max-height:none;min-height:420px}.reader-brand{display:none}.mission-facts{gap:12px}.reader-counter{font-size:.55rem}}
+/* Immersive landscape reading mode */
+.immersive-reader{height:100svh;min-height:560px;display:flex;flex-direction:column;padding:12px clamp(12px,3vw,42px) 14px;overflow:hidden}
+.immersive-reader .reader-topbar{flex:0 0 42px;max-width:1500px;width:100%;margin:0 auto}
+.landscape-stage{position:relative;isolation:isolate;display:block;flex:1;min-height:0;width:100%;max-width:1500px;margin:14px auto 12px;overflow:hidden;border:1px solid #8d704b;outline:5px solid #4c351f;background:#302719;box-shadow:0 18px 55px #080604a8}
+.landscape-image,.landscape-shade{position:absolute;inset:0}
+.landscape-image img{width:100%;height:100%;object-fit:cover;object-position:center;user-select:none;animation:landscapeReveal .8s ease both}
+.landscape-shade{background:linear-gradient(90deg,rgba(17,15,12,.82),rgba(20,17,13,.55) 48%,rgba(20,17,13,.16)),linear-gradient(0deg,rgba(15,12,9,.55),transparent 45%);z-index:1;pointer-events:none}
+.landscape-placeholder{height:100%;display:grid;place-content:center;text-align:center;color:#d3b47d;background:radial-gradient(ellipse,#796343,#302719 70%)}
+.landscape-placeholder span{font-size:5rem;text-align:center}.landscape-placeholder p{letter-spacing:.25em}
+.landscape-caption{position:absolute;z-index:2;left:24px;bottom:17px;color:#f1dfbd;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;opacity:.82}
+.landscape-content{position:absolute;z-index:3;top:0;right:0;bottom:0;width:min(52%,720px);padding:clamp(22px,4vw,58px);overflow-y:auto;color:#f4ead8;background:linear-gradient(135deg,rgba(31,25,19,.87),rgba(36,29,21,.76));border-left:1px solid rgba(239,219,183,.25);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.landscape-content .page-kicker{color:#d2b47e}
+.landscape-content h1{font:500 clamp(2.1rem,4.4vw,4.6rem)/.96 'Cormorant Garamond',serif;color:#fff0d7;margin:15px 0}
+.landscape-content .page-ornament{color:#c5a46a;margin:18px 0 24px}
+.landscape-content .page-body{font:400 clamp(.9rem,1.2vw,1.08rem)/1.75 'Cormorant Garamond',serif;color:#e5d6bd}
+.landscape-content .page-body .lead{font-size:clamp(1.1rem,1.6vw,1.4rem);color:#f1e2c7;line-height:1.55}
+.landscape-content .mission-facts{gap:13px 20px;margin-top:24px}
+.landscape-content .mission-facts div{border-color:#8c7655}
+.landscape-content .mission-facts dt,.landscape-content .equipment-type,.landscape-content .equipment-list small{color:#d0ae75}
+.landscape-content .mission-facts dd{color:#f0e2ca}
+.landscape-content .equipment-list section{border-color:#8c7655}
+.landscape-content .equipment-list h3{color:#f4e6cf}
+.landscape-content .source-list li strong{color:#f4e6cf}
+.landscape-content .source-list li span{color:#cbb99b}
+.landscape-content .source-list li a{color:#e2bd7d}
+.intro-hint{margin-top:28px;color:#d6bd91;font:italic 1rem 'Cormorant Garamond',serif}
+.immersive-reader .reader-controls{flex:0 0 40px}
+.immersive-reader .reader-hint{flex:0 0 14px;margin-top:3px;font-size:.55rem}
+.immersive-reader .reader-controls button{height:34px;width:40px}
+@media(max-width:760px){.immersive-reader{padding:8px 10px 10px}.immersive-reader .reader-brand{display:none}.landscape-stage{margin:10px auto;min-height:0}.landscape-image img{object-position:35% center}.landscape-shade{background:linear-gradient(0deg,rgba(17,15,12,.9),rgba(20,17,13,.35) 80%)}.landscape-content{top:auto;left:0;right:0;bottom:0;width:100%;height:min(66%,560px);padding:20px 21px 25px;border-left:0;border-top:1px solid rgba(239,219,183,.25);background:rgba(31,25,19,.88)}.landscape-content h1{font-size:2.4rem}.landscape-caption{left:14px;top:12px;bottom:auto;font-size:.5rem}.immersive-reader .reader-hint{font-size:.47rem;letter-spacing:.08em}.landscape-content .mission-facts{grid-template-columns:1fr 1fr}}
+@media(max-height:650px) and (min-width:761px){.landscape-content{padding:20px 30px}.landscape-content h1{font-size:2.6rem}.landscape-content .page-ornament{margin:10px 0 14px}.landscape-content .page-body{line-height:1.5}}
+
+/* =========================================
+   CHAPTER TITLE — SMALL CENTRED LABEL
+========================================= */
+
+.chapter-panel {
+  position: relative;
 }
 
-.reader-topbar{
-    height:45px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:1px solid #60482d
+.chapter-heading {
+  position: absolute;
+  z-index: 5;
+  top: clamp(12px, 2.5vh, 26px);
+  left: 50%;
+  width: max-content;
+  max-width: min(85%, 700px);
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 9px 25px 11px;
+  margin: 0;
+  color: #f2dfbd;
+  background: rgba(65, 43, 26, 0.94);
+  border: 1px solid rgba(190, 151, 94, 0.55);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
 }
 
-.reader-brand{
-    font:600 .72rem "Cormorant Garamond",serif;
-    letter-spacing:.2em;
-    color:#b99a68
+.chapter-heading h2 {
+  margin: 0;
+  color: #f2dfbd;
+  font: 500 clamp(1.15rem, 2.1vw, 1.8rem)/1.1
+    "Cormorant Garamond", serif;
 }
 
-.reader-counter{
-    color:#9d896c
+.chapter-heading .page-kicker,
+.chapter-heading .chapter-rail-rule,
+.chapter-heading .chapter-rail-caption {
+  display: none;
 }
 
-.reader-stage{
-    max-width:1320px;
-    min-height:min(70vh,720px);
-    margin:30px auto 20px;
-    display:grid;
-    grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);
-    background:#e9ddc7;
-    color:#30271d;
-    box-shadow:0 20px 55px #09060480;
-    border:9px solid #6a4829;
-    outline:1px solid #b28a54;
-    position:relative;
-    overflow:hidden
+/* Title enters from the left and settles at the top centre */
+.chapter-panel.is-active .chapter-heading {
+  animation: chapterTitleDock 750ms cubic-bezier(.22, .75, .25, 1) both;
 }
 
-.scroll-art{
-    min-height:550px;
-    background:#d8c7a8;
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    padding:20px 20px 15px;
-    border-right:1px solid #bba98a
+@keyframes chapterTitleDock {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-50% - 150px)) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
-.art-caption,.art-bottom{
-    color:#826c4c;
-    text-align:center
+/* Leave enough room beneath the floating title */
+.chapter-reading-surface {
+  height: 100%;
+  padding-top: clamp(65px, 11vh, 105px);
+  box-sizing: border-box;
 }
 
-.art-image{
-    flex:1;
-    display:grid;
-    place-items:center;
-    overflow:hidden;
-    margin:15px 0
+/* =========================================
+   IMAGE HOVER — SUBTLE BOOK-LIKE ENLARGEMENT
+========================================= */
+
+.image-zoom-trigger {
+  display: block;
+  overflow: hidden;
+  cursor: zoom-in;
 }
 
-.art-image img{
-    width:100%;
-    height:100%;
-    max-height:610px;
-    object-fit:contain;
-    mix-blend-mode:multiply
+.image-zoom-trigger img {
+  display: block;
+  transition:
+    transform 450ms cubic-bezier(.2, .7, .2, 1),
+    filter 450ms ease;
+  transform-origin: center;
 }
 
-.art-bottom span{
-    padding-left:10px;
-    color:#a27b42
+@media (hover: hover) and (pointer: fine) {
+  .image-zoom-trigger:hover img {
+    transform: scale(1.055);
+    filter: brightness(1.06);
+  }
 }
 
-.art-placeholder{
-    width:100%;
-    height:100%;
-    min-height:400px;
-    display:grid;
-    place-content:center;
-    text-align:center;
-    color:#987a4f;
-    background:repeating-linear-gradient(135deg,#d9c9aa,#d9c9aa 12px,#d2c09f 12px,#d2c09f 13px)
-}
-
-.art-placeholder span{
-    font-size:5rem
-}
-
-.art-placeholder p{
-    letter-spacing:.3em;
-    font-size:.65rem
-}
-
-.page-content{
-    padding:clamp(25px,5vw,65px);
-    background:linear-gradient(90deg,#e8dcc6,#f4ecdE);
-    position:relative;
-    overflow-y:auto;
-    max-height:720px
-}
-
-.page-kicker{
-    color:#9a7747
-}
-
-.page-content h1{
-    font:500 clamp(2.4rem,4vw,4.3rem)/.95 "Cormorant Garamond",serif;
-    margin:17px 0;
-    color:#342719
-}
-
-.page-ornament{
-    color:#b18c54;
-    margin:20px 0 28px
-}
-
-.page-body{font:400 .95rem/1.85 "Cormorant Garamond",serif;
-    color:#4c4031
-}
-
-.page-body p{
-    margin:0 0 1.1em
-}
-
-.page-body .lead{
-    font-size:1.22rem;
-    line-height:1.6;
-    color:#55442e
-}
-
-.mission-facts{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:18px 22px;
-    margin-top:35px
-}
-
-.mission-facts div{
-    border-top:1px solid #c8b797;
-    padding-top:8px
-}
-
-.mission-facts dt{
-    font:600 .58rem "DM Sans",sans-serif;
-    letter-spacing:.12em;
-    text-transform:uppercase;
-    color:#98764b
-}
-
-.mission-facts dd{
-    margin:5px 0 0;
-    font-size:1rem
-}
-
-.section-text{
-    white-space:normal
-}
-
-.section-text p{
-    margin-bottom:1.1em
-}
-
-.equipment-list section{
-    border-top:1px solid #c8b797;
-    padding:13px 0
-}
-
-.equipment-list h3{
-    font:600 1.45rem "Cormorant Garamond",serif;
-    margin:0
-}
-
-.equipment-type,.equipment-list small{
-    font:600 .58rem "DM Sans",sans-serif;
-    color:#9b794b;
-    letter-spacing:.1em;
-    text-transform:uppercase
-}
-
-.source-list{
-    padding-left:20px
-}
-
-.source-list li{
-    padding:0 0 17px 7px
-}
-
-.source-list li strong,.source-list li span,.source-list li a{
-    display:block
-}
-
-.source-list li a{
-    color:#8c6435;
-    font:600 .7rem "DM Sans",sans-serif
-}
-
-.reader-controls{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:14px
-}
-
-.reader-controls button{
-    width:42px;
-    height:38px;
-    background:#38291c;
-    color:#e9d5b4;
-    border:1px solid #80613c;
-    border-radius:2px;
-    font-size:1.1rem
-}
-
-.reader-controls button:hover:not(:disabled){
-    background:#6a4a2b
-}
-
-.reader-controls button:disabled{
-    opacity:.3;
-    cursor:not-allowed
-}
-
-.reader-controls span{
-    min-width:70px;
-    text-align:center;
-    color:#c4ad87;
-    font-size:.75rem
-}
-
-.reader-hint{
-    text-align:center;
-    color:#78664d;
-    margin-top:13px
-}
-
-.reader-loading,.reader-error{
-    padding:25px clamp(16px,4vw,55px);
-    color:var(--paper)
-}
-
-.reader-error h1{
-    font:2.8rem "Cormorant Garamond",serif
-}
-
-.reader-error p{
-    color:#c2b39b
-}
-
-@media(max-width:800px){
-    .reader-stage{
-        grid-template-columns:1fr;min-height:0
-    }
-    
-    .scroll-art{
-        min-height:260px;
-        height:34vh;
-        border-right:0;
-        border-bottom:1px solid #bba98a
-    }
-    
-    .art-image img{
-        max-height:30vh
-    }
-    
-    .page-content{
-        max-height:none;
-        min-height:420px
-    }
-    
-    .reader-brand{
-        display:none
-    }
-    
-    .mission-facts{
-        gap:12px
-    }
-    
-    .reader-counter{
-        font-size:.55rem
-    }
+.image-zoom-trigger:focus-visible {
+  outline: 2px solid #c49b60;
+  outline-offset: 4px;
 }
