@@ -19,6 +19,9 @@ export async function renderBook(app, missionId, goHome) {
     let pointerStart = null;
     let wheelLocked = false;
     let wheelLockTimer;
+    let edgeScrollDirection = 0;
+    let edgeScrollReady = false;
+    let edgeScrollTimer;
     let removeSwipe = null;
     let resizeObserver = null;
 
@@ -81,7 +84,7 @@ export async function renderBook(app, missionId, goHome) {
           </aside>
         </article>`;
       }
-      return `<article class="reader-panel chapter-panel ${page.isMainChapter ? 'chapter-opening-page' : 'chapter-continuation-page'}" data-page="${index}" data-main-chapter="${page.isMainChapter ? 'true' : 'false'}" data-chapter-page-index="${page.chapterPageIndex ?? 0}" aria-label="${esc(page.title)}">
+      return `<article class="reader-panel chapter-panel ${page.isMainChapter ? 'chapter-opening-page' : 'chapter-continuation-page'} ${page.isEquipmentPage ? 'equipment-dossier-page' : ''}" data-page="${index}" data-main-chapter="${page.isMainChapter ? 'true' : 'false'}" data-chapter-page-index="${page.chapterPageIndex ?? 0}" aria-label="${esc(page.title)}">
         <header class="chapter-heading ${!page.isMainChapter && (page.chapterPageIndex || 0) > 0 ? 'chapter-heading-continuation' : ''}">
           <p class="page-kicker">${esc(page.kicker)}</p>
           <h2>${esc(page.chapterTitle || page.title)}</h2>
@@ -104,15 +107,9 @@ export async function renderBook(app, missionId, goHome) {
       if (!panel) return;
       const inner = panel.querySelector('.chapter-reading-inner');
       if (!inner) return;
+      // Preserve the intended typography. Long content is read by scrolling,
+      // not by shrinking the text until it becomes difficult to read.
       inner.style.setProperty('--reader-fit-scale', '1');
-      // Let the browser measure the natural content before applying a modest type scale.
-      requestAnimationFrame(() => {
-        const available = inner.clientHeight;
-        const needed = inner.scrollHeight;
-        if (!available || !needed || needed <= available + 2) return;
-        const scale = Math.max(.82, Math.min(1, (available / needed) * .97));
-        inner.style.setProperty('--reader-fit-scale', String(scale));
-      });
     }
 
     function showPage(index) {
@@ -171,10 +168,49 @@ export async function renderBook(app, missionId, goHome) {
     stage.addEventListener('wheel', event => {
       const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
       if (Math.abs(delta) < 18) return;
+      const direction = delta > 0 ? 1 : -1;
+      const activePanel = track.querySelector('.reader-panel.is-active');
+      const scrollArea = event.target.closest?.('.equipment-details, .chapter-reading-surface');
+
+      // Let chapter content scroll naturally. Only a further deliberate wheel
+      // gesture, after pausing at the boundary for one second, changes pages.
+      if (scrollArea && activePanel?.contains(scrollArea)) {
+        const canScroll = scrollArea.scrollHeight > scrollArea.clientHeight + 2;
+        if (canScroll) {
+          const atTop = scrollArea.scrollTop <= 1;
+          const atBottom = scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 2;
+          const reachedBoundary = direction > 0 ? atBottom : atTop;
+
+          if (!reachedBoundary) {
+            edgeScrollDirection = 0;
+            edgeScrollReady = false;
+            window.clearTimeout(edgeScrollTimer);
+            return; // Native scrolling inside the content area.
+          }
+
+          event.preventDefault();
+          if (edgeScrollDirection !== direction) {
+            edgeScrollDirection = direction;
+            edgeScrollReady = false;
+            window.clearTimeout(edgeScrollTimer);
+            edgeScrollTimer = window.setTimeout(() => { edgeScrollReady = true; }, 1000);
+            return;
+          }
+          if (!edgeScrollReady) return;
+
+          edgeScrollDirection = 0;
+          edgeScrollReady = false;
+          window.clearTimeout(edgeScrollTimer);
+          direction > 0 ? next() : previous();
+          return;
+        }
+      }
+
+      // Pages without overflowing content keep the existing wheel navigation.
       event.preventDefault();
       if (wheelLocked) return;
       wheelLocked = true;
-      delta > 0 ? next() : previous();
+      direction > 0 ? next() : previous();
       window.clearTimeout(wheelLockTimer);
       wheelLockTimer = window.setTimeout(() => { wheelLocked = false; }, 900);
     }, { passive:false });
@@ -194,6 +230,7 @@ export async function renderBook(app, missionId, goHome) {
       window.removeEventListener('keydown', lightboxKeyboard);
       closeLightbox();
       window.clearTimeout(wheelLockTimer);
+      window.clearTimeout(edgeScrollTimer);
       resizeObserver?.disconnect();
       if (typeof removeSwipe === 'function') removeSwipe();
     };
@@ -275,6 +312,8 @@ function buildPages(mission, chapters, sections, equipment, media, sources) {
     chapterSections.forEach((section, sectionIndex) => {
       const sectionMedia = media.find(item => String(item.section_id) === String(section.section_id) && (item.media_url || item.image_url) && (!item.media_type || /image|photo|picture/i.test(item.media_type)));
       const image = sectionMedia?.media_url || sectionMedia?.image_url || null;
+      // Use the image caption stored in Supabase's media table.
+      const imageCaption = sectionMedia?.caption?.trim() || `${chapter.title} · ${section.title || ''}`;
       const content = section.content_type === 'html'
         ? (section.content || '')
         : `<p>${esc(section.content || 'Content coming soon.').replace(/\r?\n/g, '</p><p>')}</p>`;
@@ -285,7 +324,7 @@ function buildPages(mission, chapters, sections, equipment, media, sources) {
         chapterTitle:chapter.title,
         isMainChapter: sectionIndex === 0,
         chapterPageIndex: sectionIndex,
-        caption:`${chapter.title} · ${section.title || ''}`,
+        caption:imageCaption,
         image,
         html:`${sectionIndex === 0 && chapter.description ? `<p class="chapter-lead">${esc(chapter.description)}</p>` : ''}<div class="section-text">${content || '<p>Content coming soon.</p>'}</div>`
       });
@@ -313,11 +352,14 @@ function buildPages(mission, chapters, sections, equipment, media, sources) {
     [...equipment].forEach((item, equipmentIndex) => {
       const descriptionPages = splitDescription(item.description);
       const firstDescription = descriptionPages.shift() || '';
+      // Equipment photo captions come from the equipment table's name column.
+      // Media-table captions remain in use for ordinary section images only.
+      const equipmentImageCaption = item.name;
       const common = {
         name: esc(item.name),
         type: esc(item.equipment_type || 'Equipment'),
         purpose: esc(item.purpose || ''),
-        image: item.image_url ? `<figure class="equipment-photo"><img src="${esc(item.image_url)}" alt="${esc(item.name)}" loading="lazy"></figure>` : '',
+        image: item.image_url ? `<figure class="equipment-photo"><button type="button" class="image-zoom-trigger" aria-label="Enlarge image: ${esc(equipmentImageCaption)}"><img src="${esc(item.image_url)}" alt="${esc(equipmentImageCaption)}" loading="lazy"></button><figcaption>${esc(equipmentImageCaption)}</figcaption></figure>` : '',
         location: esc(item.location || ''),
         status: esc(item.operational_status || ''),
         deployed: item.date_deployed ? date(item.date_deployed) : ''
@@ -338,16 +380,19 @@ function buildPages(mission, chapters, sections, equipment, media, sources) {
         isMainChapter: equipmentIndex === 0,
         chapterPageIndex: equipmentIndex,
         hideContentTitle: true,
+        isEquipmentPage: true,
         html: `
-          <article class="equipment-single">
-            <header class="equipment-card-heading">
-              <h3>${common.name}</h3>
-              <span>${common.type}</span>
-            </header>
+          <article class="equipment-single ${common.image ? 'has-equipment-photo' : 'no-equipment-photo'}">
             ${common.image}
-            ${common.purpose ? `<p class="equipment-purpose"><strong>Purpose:</strong> ${common.purpose}</p>` : ''}
-            ${firstDescription ? `<p class="equipment-description">${esc(firstDescription)}</p>` : ''}
-            ${meta}
+            <div class="equipment-details">
+              <header class="equipment-card-heading">
+                <h3>${common.name}</h3>
+                <span>${common.type}</span>
+              </header>
+              ${common.purpose ? `<p class="equipment-purpose"><strong>Purpose:</strong> ${common.purpose}</p>` : ''}
+              ${firstDescription ? `<p class="equipment-description">${esc(firstDescription)}</p>` : ''}
+              ${meta}
+            </div>
           </article>`
       });
 
@@ -362,14 +407,17 @@ function buildPages(mission, chapters, sections, equipment, media, sources) {
           isMainChapter: false,
           chapterPageIndex: equipmentIndex + continuationIndex + 1,
           hideContentTitle: true,
+          isEquipmentPage: true,
           html: `
-            <article class="equipment-single equipment-continuation">
-              <header class="equipment-card-heading">
-                <h3>${common.name}</h3>
-                <span>CONTINUED · ${common.type}</span>
-              </header>
-              <p>${esc(chunk)}</p>
-              ${continuationIndex === descriptionPages.length - 1 ? meta : ''}
+            <article class="equipment-single equipment-continuation no-equipment-photo">
+              <div class="equipment-details">
+                <header class="equipment-card-heading">
+                  <h3>${common.name}</h3>
+                  <span>CONTINUED · ${common.type}</span>
+                </header>
+                <p>${esc(chunk)}</p>
+                ${continuationIndex === descriptionPages.length - 1 ? meta : ''}
+              </div>
             </article>`
         });
       });

@@ -3568,453 +3568,1203 @@ body.is-reader .chapter-body {
 }
 
 
-/* =========================================================
-   CHAPTER TITLE LAYOUT — OPENING PAGE vs CONTENT PAGES
-   ========================================================= */
-
-/* First page of each chapter:
-   keep the title block vertically centred on the LEFT side. */
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading {
-  position: absolute !important;
-  top: 50% !important;
-  left: clamp(28px, 6vw, 100px) !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: min(44%, 620px) !important;
-  max-width: min(44%, 620px) !important;
-  min-width: 0 !important;
-  transform: translateY(-50%) !important;
-
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  justify-content: center !important;
-  text-align: left !important;
-  padding: clamp(18px, 2.5vw, 34px) !important;
-  box-sizing: border-box !important;
-  background: linear-gradient(105deg, rgba(65, 43, 26, .96), rgba(128, 99, 72, .96)) !important;
-  overflow: visible !important;
+/* Equipment dossier only: add a vertical scrollbar if its content overflows.
+   No page layout, sizing, typography, image, or navigation rules are changed. */
+.chapter-reading-surface:has(.equipment-single) {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  scrollbar-width: thin;
+  scrollbar-color: #9b774b rgba(108, 81, 51, .12);
 }
 
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading > * {
+.chapter-reading-surface:has(.equipment-single)::-webkit-scrollbar {
+  width: 9px;
+}
+
+.chapter-reading-surface:has(.equipment-single)::-webkit-scrollbar-track {
+  background: rgba(108, 81, 51, .10);
+  border-radius: 10px;
+}
+
+.chapter-reading-surface:has(.equipment-single)::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b89562, #795735);
+  border: 2px solid #e0d0b0;
+  border-radius: 10px;
+}
+
+.chapter-reading-surface:has(.equipment-single)::-webkit-scrollbar-thumb:hover {
+  background: #6f4d2d;
+}
+
+
+/* V11 — targeted hardware-page layout correction only.
+   Other chapters, the mission overview, and further-reading pages are untouched. */
+
+/* Hardware chapter section pages: image on the left, its existing text on the right. */
+.hardware-layout-page .chapter-reading-inner.has-section-photo {
+  display: grid !important;
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr) !important;
+  align-items: center !important;
+  justify-items: stretch !important;
+  gap: clamp(20px, 3vw, 46px) !important;
+  width: min(100%, 1120px) !important;
+  max-width: 1120px !important;
+  margin: 0 auto !important;
+  padding: clamp(12px, 1.6vw, 22px) !important;
+  overflow: auto !important;
+}
+.hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-photo-card {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  width: min(100%, 280px) !important;
+  max-width: 280px !important;
+  justify-self: center !important;
+  align-self: center !important;
+  margin: 0 auto !important;
+}
+.hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-reading-copy {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
-  align-self: stretch !important;
+  align-self: center !important;
+  justify-self: stretch !important;
+  text-align: left !important;
+}
+.hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-reading-copy > h1,
+.hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-reading-copy > .intro-rule,
+.hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-reading-copy .chapter-body,
+.hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-reading-copy .chapter-body p {
   text-align: left !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
-
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading h2 {
-  font-size: clamp(25px, 3.4vw, 48px) !important;
-  line-height: 1.08 !important;
-  text-align: left !important;
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-  word-break: normal !important;
-  text-wrap: pretty !important;
+.hardware-layout-page .chapter-reading-inner.has-section-photo .chapter-photo-card img {
+  width: 100% !important;
+  height: clamp(170px, 34vh, 280px) !important;
+  max-height: 280px !important;
+  object-fit: contain !important;
 }
-
-/* Content pages:
-   show ONLY the full chapter title in a compact shaded bar at top-centre. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-  position: absolute !important;
-  top: clamp(14px, 2.5vh, 30px) !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: max-content !important;
-  max-width: min(94%, 1100px) !important;
-  min-width: 0 !important;
-  height: auto !important;
-  transform: translateX(-50%) !important;
-
+.hardware-layout-page .chapter-reading-inner.has-section-photo .chapter-photo-card .image-zoom-trigger {
   display: block !important;
-  padding: clamp(10px, 1.5vh, 17px) clamp(20px, 3vw, 46px) !important;
-  margin: 0 !important;
-  box-sizing: border-box !important;
-  text-align: center !important;
-  background: linear-gradient(105deg, rgba(65, 43, 26, .96), rgba(128, 99, 72, .96)) !important;
-  border: 1px solid rgba(190, 151, 94, .55) !important;
-  box-shadow: 0 5px 18px rgba(0, 0, 0, .18) !important;
-  overflow: visible !important;
-}
-
-/* Remove chapter number, ornament and subtitle on continuation pages. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading .page-kicker,
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading .chapter-rail-rule,
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading .chapter-rail-caption {
-  display: none !important;
-}
-
-/* Title itself remains complete and centred; it wraps instead of clipping. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading h2 {
-  display: block !important;
-  width: auto !important;
-  max-width: 100% !important;
-  margin: 0 !important;
+  width: 100% !important;
   padding: 0 !important;
-  color: #f2dfbd !important;
-  font: 500 clamp(20px, 2.6vw, 36px)/1.12 "Cormorant Garamond", serif !important;
+  line-height: 0 !important;
+}
+@media (max-width: 700px) {
+  .hardware-layout-page .chapter-reading-inner.has-section-photo {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+  .hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-photo-card,
+  .hardware-layout-page .chapter-reading-inner.has-section-photo > .chapter-reading-copy {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+}
+
+/* Individual equipment dossier: image left, all existing details right. */
+.chapter-panel .equipment-single:has(.equipment-photo) {
+  display: grid !important;
+  grid-template-columns: minmax(190px, 0.72fr) minmax(0, 1.28fr) !important;
+  grid-template-rows: auto auto auto 1fr auto !important;
+  align-items: center !important;
+  column-gap: clamp(20px, 3vw, 44px) !important;
+  row-gap: 8px !important;
+  width: min(100%, 1120px) !important;
+  max-height: calc(100% - 12px) !important;
+  padding: clamp(14px, 2vw, 24px) !important;
+  overflow: auto !important;
+}
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-card-heading {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  text-align: left !important;
+  margin: 0 0 6px !important;
+  padding-bottom: 10px !important;
+}
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-photo {
+  grid-column: 1 !important;
+  grid-row: 1 / span 4 !important;
+  align-self: center !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  margin: 0 auto !important;
+  padding: 9px 9px 0 !important;
+  background: #fff !important;
+}
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-photo .image-zoom-trigger {
+  display: block !important;
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  cursor: zoom-in !important;
+  background: #fff !important;
+}
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-photo img {
+  width: 100% !important;
+  height: clamp(170px, 34vh, 280px) !important;
+  max-height: 280px !important;
+  object-fit: contain !important;
+}
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-photo figcaption {
+  padding: 9px 5px 8px !important;
   text-align: center !important;
-  white-space: normal !important;
-  overflow: visible !important;
-  overflow-wrap: anywhere !important;
-  word-break: normal !important;
-  text-wrap: balance !important;
 }
-
-/* Keep body content clear of the top title bar on continuation pages. */
-.reader-panel.chapter-panel.chapter-continuation-page .chapter-reading-surface {
-  padding-top: clamp(82px, 13vh, 132px) !important;
-  box-sizing: border-box !important;
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-purpose,
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-description,
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-meta {
+  grid-column: 2 !important;
+  text-align: left !important;
 }
-
-@media (max-width: 760px) {
-  .reader-panel.chapter-panel.chapter-opening-page > .chapter-heading {
-    left: 5% !important;
-    width: 54% !important;
-    max-width: 54% !important;
-    padding: 14px !important;
+.chapter-panel .equipment-single:has(.equipment-photo) .equipment-meta {
+  justify-content: flex-start !important;
+}
+@media (max-width: 700px) {
+  .chapter-panel .equipment-single:has(.equipment-photo) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto !important;
+    row-gap: 10px !important;
   }
-
-  .reader-panel.chapter-panel.chapter-opening-page > .chapter-heading h2 {
-    font-size: clamp(22px, 5vw, 32px) !important;
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-card-heading,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-photo,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-purpose,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-description,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-meta {
+    grid-column: 1 !important;
+    grid-row: auto !important;
   }
-
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-    top: 12px !important;
-    width: max-content !important;
-    max-width: 94% !important;
-    padding: 9px 14px !important;
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-card-heading,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-purpose,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-description,
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-meta {
+    text-align: center !important;
   }
-
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading h2 {
-    font-size: clamp(18px, 4.6vw, 26px) !important;
-  }
-
-  .reader-panel.chapter-panel.chapter-continuation-page .chapter-reading-surface {
-    padding-top: 76px !important;
+  .chapter-panel .equipment-single:has(.equipment-photo) .equipment-meta {
+    justify-content: center !important;
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-  .reader-panel.chapter-panel.chapter-opening-page > .chapter-heading,
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
 
 /* =========================================================
-   CHAPTER OPENING SPREAD + CENTRED CONTINUATION TITLE
+   CHAPTER TITLE POSITION — REQUESTED FINAL LAYOUT
+   Opening page: title panel occupies the left 45%; content
+   remains on the right. Continuation pages: title band sits
+   at the top centre, below the mission header.
    ========================================================= */
 
-/* Chapter's first page: the entire left-hand panel is the title panel. */
 .reader-panel.chapter-panel.chapter-opening-page {
   position: relative !important;
   display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  min-height: 100% !important;
   overflow: hidden !important;
-  background: #dfcfad !important;
 }
 
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading {
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading {
   position: absolute !important;
-  z-index: 8 !important;
+  z-index: 5 !important;
   inset: 0 auto 0 0 !important;
-  width: 42% !important;
-  max-width: 42% !important;
+  width: 45% !important;
+  max-width: 45% !important;
   height: 100% !important;
   min-height: 100% !important;
-  margin: 0 !important;
-  padding: clamp(26px, 4vw, 64px) !important;
   box-sizing: border-box !important;
+  padding: clamp(24px, 4vw, 64px) !important;
+  margin: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: flex-start !important;
   justify-content: center !important;
-  gap: clamp(12px, 2vh, 24px) !important;
-  text-align: left !important;
-  background: linear-gradient(145deg, #4a3020 0%, #73563c 100%) !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: 8px 0 24px rgba(45, 28, 15, .14) !important;
+  gap: clamp(10px, 1.8vh, 20px) !important;
   transform: none !important;
-  overflow: hidden !important;
+  text-align: left !important;
+  background: linear-gradient(110deg, #4b3020 0%, #76583d 100%) !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading > * {
-  display: block !important;
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading > * {
   width: 100% !important;
   max-width: 100% !important;
   margin-left: 0 !important;
   margin-right: 0 !important;
-  align-self: stretch !important;
   text-align: left !important;
+  align-self: stretch !important;
 }
 
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading h2 {
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading h2 {
   color: #f2dfbd !important;
-  font: 500 clamp(27px, 3.5vw, 52px)/1.08 "Cormorant Garamond", serif !important;
-  white-space: normal !important;
+  font-size: clamp(1.8rem, 3.6vw, 4rem) !important;
+  line-height: 1.05 !important;
   overflow-wrap: anywhere !important;
-  word-break: normal !important;
   text-wrap: pretty !important;
 }
 
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading .page-kicker {
-  color: #e4c894 !important;
-  letter-spacing: .16em !important;
-}
-
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading .chapter-rail-rule {
-  color: #d6b77e !important;
-}
-
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-heading .chapter-rail-caption {
-  color: #e4d1b0 !important;
-  font: 400 clamp(14px, 1.35vw, 19px)/1.5 "Cormorant Garamond", serif !important;
-}
-
-/* Keep the actual section text/media in the right-hand page area. */
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-reading-surface {
+.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-surface {
   position: absolute !important;
-  inset: 0 0 0 42% !important;
-  width: 58% !important;
+  inset: 0 0 0 45% !important;
+  width: 55% !important;
   height: 100% !important;
   min-height: 0 !important;
-  margin: 0 !important;
-  padding: clamp(24px, 3vw, 48px) !important;
   box-sizing: border-box !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  padding: clamp(14px, 2.2vw, 32px) !important;
   overflow: auto !important;
-  background: #dfcfad !important;
+  background: transparent !important;
 }
 
-.reader-panel.chapter-panel.chapter-opening-page > .chapter-reading-surface > .chapter-reading-inner {
+.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-inner {
   width: 100% !important;
+  min-height: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* From the second page of each chapter onward, keep the chapter
+   title in a centred brown band at the top of the reading page. */
+.reader-panel.chapter-panel.chapter-title-docked {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  align-content: start !important;
+  gap: clamp(12px, 2vh, 22px) !important;
+  padding: clamp(12px, 2vh, 24px) clamp(18px, 4vw, 60px) !important;
+  overflow: hidden !important;
+}
+
+.reader-panel.chapter-panel.chapter-title-docked .chapter-heading {
+  position: relative !important;
+  inset: auto !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  width: min(100%, 1100px) !important;
   max-width: 100% !important;
   height: auto !important;
-  max-height: 100% !important;
-  margin: auto !important;
+  min-height: 0 !important;
+  margin: 0 auto !important;
+  padding: clamp(10px, 1.5vh, 18px) clamp(16px, 3vw, 40px) !important;
   display: flex !important;
-  flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 18px !important;
-  overflow: auto !important;
-}
-
-.reader-panel.chapter-panel.chapter-opening-page .chapter-photo-card {
-  width: min(100%, 260px) !important;
-  max-width: 260px !important;
-  margin: 0 auto !important;
-}
-
-.reader-panel.chapter-panel.chapter-opening-page .chapter-photo-card img {
-  display: block !important;
-  width: 100% !important;
-  height: clamp(150px, 27vh, 240px) !important;
-  object-fit: contain !important;
-}
-
-.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-copy {
-  width: 100% !important;
-  max-width: 760px !important;
+  transform: none !important;
   text-align: center !important;
-}
-
-.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-copy h1,
-.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-copy .intro-rule,
-.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-copy .chapter-body,
-.reader-panel.chapter-panel.chapter-opening-page .chapter-reading-copy .chapter-body p {
-  text-align: center !important;
-}
-
-/* From the second page onward: put the chapter-title bar at the exact
-   vertical and horizontal centre of the reading page. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-  position: absolute !important;
-  z-index: 12 !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  width: max-content !important;
-  max-width: min(90%, 1050px) !important;
-  min-width: 0 !important;
-  height: auto !important;
-  margin: 0 !important;
-  padding: clamp(12px, 1.8vh, 20px) clamp(24px, 4vw, 58px) !important;
-  box-sizing: border-box !important;
-  display: block !important;
-  text-align: center !important;
-  background: linear-gradient(105deg, #4a3020, #806246) !important;
+  background: linear-gradient(105deg, #654a31 0%, #806348 100%) !important;
   border: 1px solid rgba(190, 151, 94, .55) !important;
-  box-shadow: 0 8px 24px rgba(45, 28, 15, .18) !important;
-  transform: translate(-50%, -50%) !important;
-  overflow: visible !important;
+  box-shadow: 0 8px 22px rgba(40, 27, 16, .16) !important;
 }
 
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading .page-kicker,
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading .chapter-rail-rule,
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading .chapter-rail-caption {
-  display: none !important;
-}
-
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading h2 {
-  display: block !important;
-  width: auto !important;
+.reader-panel.chapter-panel.chapter-title-docked .chapter-heading h2 {
+  width: 100% !important;
   max-width: 100% !important;
   margin: 0 !important;
   color: #f2dfbd !important;
-  font: 500 clamp(22px, 2.8vw, 38px)/1.12 "Cormorant Garamond", serif !important;
+  font-size: clamp(1.2rem, 2vw, 2rem) !important;
+  line-height: 1.15 !important;
   text-align: center !important;
-  white-space: normal !important;
   overflow-wrap: anywhere !important;
-  text-wrap: balance !important;
 }
 
-/* Avoid hiding section content behind the centred continuation title. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-reading-surface {
-  padding-top: 0 !important;
+.reader-panel.chapter-panel.chapter-title-docked .chapter-heading .page-kicker,
+.reader-panel.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-rule,
+.reader-panel.chapter-panel.chapter-title-docked .chapter-heading .chapter-rail-caption {
+  display: none !important;
 }
 
-/* Mobile: retain a split title panel, but give the text enough room. */
-@media (max-width: 760px) {
-  .reader-panel.chapter-panel.chapter-opening-page > .chapter-heading {
-    width: 42% !important;
-    max-width: 42% !important;
+.reader-panel.chapter-panel.chapter-title-docked .chapter-reading-surface {
+  position: relative !important;
+  inset: auto !important;
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: clamp(8px, 1.5vw, 20px) !important;
+  overflow: auto !important;
+  background: transparent !important;
+}
+
+@media (max-width: 700px) {
+  .reader-panel.chapter-panel.chapter-opening-page .chapter-heading {
+    width: 40% !important;
+    max-width: 40% !important;
     padding: 14px !important;
   }
-
-  .reader-panel.chapter-panel.chapter-opening-page > .chapter-heading h2 {
-    font-size: clamp(20px, 5vw, 30px) !important;
+  .reader-panel.chapter-panel.chapter-opening-page .chapter-heading h2 {
+    font-size: clamp(1.25rem, 5vw, 2rem) !important;
   }
-
-  .reader-panel.chapter-panel.chapter-opening-page > .chapter-reading-surface {
-    inset: 0 0 0 42% !important;
-    width: 58% !important;
-    padding: 12px !important;
+  .reader-panel.chapter-panel.chapter-opening-page .chapter-reading-surface {
+    left: 40% !important;
+    width: 60% !important;
+    padding: 8px !important;
   }
-
-  .reader-panel.chapter-panel.chapter-opening-page .chapter-photo-card {
-    width: min(100%, 150px) !important;
-    max-width: 150px !important;
-  }
-
-  .reader-panel.chapter-panel.chapter-opening-page .chapter-photo-card img {
-    height: clamp(95px, 20vh, 150px) !important;
-  }
-
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-    max-width: 92% !important;
-    padding: 10px 16px !important;
-  }
-
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading h2 {
-    font-size: clamp(19px, 4.8vw, 27px) !important;
+  .reader-panel.chapter-panel.chapter-title-docked {
+    padding: 10px !important;
   }
 }
 
 
-/* =========================================================
-   V4 — CONTINUATION CHAPTER TITLE BELOW THE MISSION HEADING
-   ========================================================= */
+/* V13 — requested small, scoped reader refinements. */
 
-/* The chapter label belongs in the upper-middle of the page,
-   not at the vertical centre where it covers the reading text. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-  top: clamp(118px, 30%, 220px) !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translateX(-50%) !important;
-  width: max-content !important;
-  max-width: min(90%, 1050px) !important;
+/* Keep every element in the opening chapter-title panel left aligned. */
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading > *,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading h2,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading .page-kicker,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading .chapter-rail-rule,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading .chapter-rail-caption {
+  text-align: left !important;
+  align-items: flex-start !important;
+  align-self: flex-start !important;
+  justify-content: flex-start !important;
+}
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading > * {
+  width: 100% !important;
+}
+
+/* Use the same clean white photo-card treatment for section images as the
+   existing hardware image cards; retain the current image and caption. */
+.reader-panel.chapter-panel .chapter-photo-card {
+  box-sizing: border-box !important;
+  width: min(100%, 280px) !important;
+  max-width: 280px !important;
+  margin: 0 auto !important;
+  padding: 10px 10px 8px !important;
+  background: #fff !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: 0 12px 28px rgba(69, 49, 28, .14) !important;
+}
+.reader-panel.chapter-panel .chapter-photo-card .image-zoom-trigger {
+  display: block !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  line-height: 0 !important;
+  cursor: zoom-in !important;
+}
+.reader-panel.chapter-panel .chapter-photo-card img {
+  display: block !important;
+  width: 100% !important;
+  height: clamp(170px, 34vh, 280px) !important;
+  max-height: 280px !important;
+  object-fit: contain !important;
+  background: #fff !important;
+  border: 0 !important;
+}
+.reader-panel.chapter-panel .chapter-photo-card figcaption {
+  padding: 10px 5px 4px !important;
+  color: #826044 !important;
+  text-align: center !important;
+  font: 400 1rem/1.4 "Cormorant Garamond", serif !important;
+}
+
+/* Scroll within each chapter's content pane without altering the page frame. */
+.reader-panel.chapter-panel .chapter-reading-surface {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #a98758 rgba(108, 81, 51, .10);
+}
+.reader-panel.chapter-panel .chapter-reading-surface::-webkit-scrollbar {
+  width: 9px;
+}
+.reader-panel.chapter-panel .chapter-reading-surface::-webkit-scrollbar-track {
+  background: rgba(108, 81, 51, .10);
+  border-radius: 10px;
+}
+.reader-panel.chapter-panel .chapter-reading-surface::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b89562, #795735);
+  border: 2px solid #e0d0b0;
+  border-radius: 10px;
+}
+.reader-panel.chapter-panel .chapter-reading-surface::-webkit-scrollbar-thumb:hover {
+  background: #6f4d2d;
+}
+.reader-panel.chapter-panel .chapter-reading-inner {
+  min-height: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+.reader-panel.chapter-panel .equipment-single:has(.equipment-photo) {
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 700px) {
+  .reader-panel.chapter-panel .chapter-photo-card {
+    width: min(100%, 250px) !important;
+    max-width: 250px !important;
+  }
+}
+
+
+/* V14 — restore readable, fully scrollable equipment content and centre
+   the chapter-opening title within its existing left-side panel. */
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading > *,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading h2,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading .page-kicker,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading .chapter-rail-rule,
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading .chapter-rail-caption {
+  text-align: center !important;
+}
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading {
+  align-items: center !important;
+  justify-content: center !important;
+}
+.reader-panel.chapter-panel.chapter-opening-page .chapter-heading > * {
+  align-self: center !important;
+}
+
+/* The reading surface is the single scroll container. Avoid a nested
+   scroll area inside the equipment dossier, which hid the final lines. */
+.reader-panel.chapter-panel .chapter-reading-surface {
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  scrollbar-gutter: stable;
+}
+.reader-panel.chapter-panel .chapter-reading-inner {
+  max-height: none !important;
+  min-height: 100% !important;
+  height: auto !important;
+  display: block !important;
+  overflow: visible !important;
+  justify-content: flex-start !important;
+  --reader-fit-scale: 1 !important;
+}
+.reader-panel.chapter-panel .equipment-single {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+.reader-panel.chapter-panel .equipment-single:has(.equipment-photo) {
+  max-height: none !important;
+  overflow: visible !important;
+  align-items: start !important;
+}
+
+/* Keep the existing white photo-card appearance, but let each image keep
+   its natural proportions so blank bars are not introduced by fixed height. */
+.reader-panel.chapter-panel .equipment-single .equipment-photo img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 280px !important;
+  object-fit: contain !important;
+  background: #fff !important;
+  border: 0 !important;
+}
+.reader-panel.chapter-panel .equipment-single .equipment-photo .image-zoom-trigger {
+  height: auto !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+}
+
+/* V15 — scope the content-scroll correction to equipment dossier pages only.
+   Normal section pages (including The Last Transmission) keep their previous
+   image-left / text-right layout and do not inherit the equipment scrollbar. */
+.reader-panel.chapter-panel:not(.equipment-dossier-page) .chapter-reading-surface {
+  overflow: hidden !important;
+  scrollbar-width: none !important;
+  scrollbar-gutter: auto !important;
+}
+.reader-panel.chapter-panel:not(.equipment-dossier-page) .chapter-reading-surface::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+}
+.reader-panel.chapter-panel:not(.equipment-dossier-page) .chapter-reading-inner.has-section-photo {
+  display: grid !important;
+  grid-template-columns: minmax(0, 250px) minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: clamp(24px, 4vw, 64px) !important;
+  width: min(100%, 1120px) !important;
+  max-width: 1120px !important;
+  min-height: 100% !important;
+  height: 100% !important;
+  margin-inline: auto !important;
+  overflow: hidden !important;
+}
+.reader-panel.chapter-panel:not(.equipment-dossier-page) .chapter-reading-inner.has-section-photo > .chapter-photo-card {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+}
+.reader-panel.chapter-panel:not(.equipment-dossier-page) .chapter-reading-inner.has-section-photo > .chapter-reading-copy {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+}
+
+/* Equipment details alone use the scrollable content pane. */
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-reading-surface {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #a98758 rgba(108, 81, 51, .10) !important;
+  scrollbar-gutter: stable;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-reading-surface::-webkit-scrollbar {
+  display: block !important;
+  width: 9px !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-reading-inner {
+  display: block !important;
+  min-height: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-single {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+
+/* V31 — Equipment dossier: keep the photo on the left and scroll the full text pane. */
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-reading-surface {
+  position: absolute !important;
+  inset: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page.chapter-title-docked .chapter-reading-surface {
+  top: 54px !important;
+  height: calc(100% - 54px) !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-reading-inner {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-reading-copy {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .chapter-body {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-single {
+  display: grid !important;
+  grid-template-columns: minmax(190px, .72fr) minmax(0, 1.28fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  align-items: stretch !important;
+  gap: clamp(20px, 3vw, 44px) !important;
+  width: min(100%, 1120px) !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  margin: 0 auto !important;
+  padding: clamp(14px, 2vw, 24px) !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-single > .equipment-photo {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  align-self: center !important;
+  justify-self: center !important;
+  width: 100% !important;
+  max-width: 285px !important;
   margin: 0 !important;
 }
-
-/* Keep the chapter label clear of the section heading and its divider.
-   Give the reading content a little more room below the title bar. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-reading-surface {
-  padding-top: clamp(150px, 25vh, 210px) !important;
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-single > .equipment-details {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin !important;
+  scrollbar-color: #a98758 rgba(108, 81, 51, .10) !important;
+  padding: 0 18px 28px 0 !important;
   box-sizing: border-box !important;
 }
-
-@media (max-width: 760px) {
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-    top: clamp(92px, 22%, 150px) !important;
-    max-width: 92% !important;
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-details::-webkit-scrollbar { width: 9px; }
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-details::-webkit-scrollbar-thumb {
+  background: #a98758;
+  border-radius: 10px;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-single.no-equipment-photo {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-single.no-equipment-photo > .equipment-details {
+  grid-column: 1 !important;
+  max-width: 900px !important;
+  margin-inline: auto !important;
+}
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-details .equipment-card-heading,
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-details .equipment-purpose,
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-details .equipment-description,
+.reader-panel.chapter-panel.equipment-dossier-page .equipment-details .equipment-meta {
+  grid-column: auto !important;
+  grid-row: auto !important;
+  text-align: left !important;
+}
+@media (max-width: 700px) {
+  .reader-panel.chapter-panel.equipment-dossier-page .equipment-single {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: 12px !important;
   }
-
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-reading-surface {
-    padding-top: clamp(125px, 22vh, 175px) !important;
+  .reader-panel.chapter-panel.equipment-dossier-page .equipment-single > .equipment-photo {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    max-width: 160px !important;
   }
+  .reader-panel.chapter-panel.equipment-dossier-page .equipment-single > .equipment-details {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+  }
+  .reader-panel.chapter-panel.equipment-dossier-page .equipment-single.no-equipment-photo {
+    grid-template-rows: minmax(0, 1fr) !important;
+  }
+}
+
+/* Move equipment information to the right side */
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:not(:has(.equipment-photo)) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    width: 100% !important;
+    padding-right: 5% !important;
+    box-sizing: border-box !important;
+}
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:not(:has(.equipment-photo))
+.equipment-details {
+    width: 58% !important;
+    max-width: 720px !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* Move equipment information to the right side */
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:not(:has(.equipment-photo)) {
+    display: flex !important;
+    justify-content: flex-end !important;
+    width: 100% !important;
+    padding-right: 5% !important;
+    box-sizing: border-box !important;
+}
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:not(:has(.equipment-photo))
+.equipment-details {
+    width: 58% !important;
+    max-width: 720px !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* =========================================
+   EQUIPMENT PAGE — SHIFT CONTENT RIGHT
+========================================= */
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.chapter-reading-inner {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single {
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr) !important;
+    gap: 30px !important;
+
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+
+    padding: 24px 24px 24px 7% !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep image on the left */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-photo {
+    grid-column: 1 !important;
+    align-self: center !important;
+    justify-self: center !important;
+    width: 100% !important;
+    max-width: 320px !important;
+}
+
+/* Move information to the right */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details {
+    grid-column: 2 !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+
+    margin: 0 !important;
+    padding-right: 12px !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+@media (max-width: 700px) {
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single {
+        grid-template-columns: 1fr !important;
+        padding: 12px !important;
+    }
+
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-photo,
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-details {
+        grid-column: 1 !important;
+    }
+}
+
+/* ================================================
+   EQUIPMENT FIRST PAGE — RESPECT CHAPTER TITLE PANEL
+   Keep title panel on the left 45%.
+   Move all equipment content into the right 55%.
+================================================ */
+
+/* Do not change the chapter heading or its position */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.chapter-heading {
+    left: 0 !important;
+    right: auto !important;
+    width: 45% !important;
+    max-width: 45% !important;
+}
+
+/* Move the equipment reading area to the right of the title panel */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.chapter-reading-surface {
+    position: absolute !important;
+
+    left: 45% !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+
+    width: 55% !important;
+    height: 100% !important;
+
+    padding: clamp(14px, 2vw, 30px) !important;
+    box-sizing: border-box !important;
+
+    overflow: hidden !important;
+}
+
+/* Use the full available width inside the right-hand area */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.chapter-reading-inner {
+    display: block !important;
+
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Image and details share only the right-hand area */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-single {
+    display: grid !important;
+
+    grid-template-columns: minmax(100px, 28%) minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: 100% !important;
+
+    margin: 0 !important;
+    padding: 10px !important;
+    gap: clamp(12px, 2vw, 28px) !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Equipment image stays inside the right-hand content area */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-single > .equipment-photo {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    width: 100% !important;
+    max-width: 240px !important;
+
+    margin: auto !important;
+    align-self: center !important;
+}
+
+/* Description expands into the remaining right-hand space */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-single > .equipment-details {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+
+    margin: 0 !important;
+    padding: 0 12px 20px 0 !important;
+
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep heading and paragraphs aligned to the left */
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-details .equipment-card-heading,
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-details .equipment-purpose,
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-details .equipment-description,
+.reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+.equipment-details .equipment-meta {
+    width: 100% !important;
+    max-width: none !important;
+    text-align: left !important;
+}
+
+/* Mobile adjustment */
+@media (max-width: 700px) {
+    .reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+    .chapter-reading-surface {
+        left: 45% !important;
+        width: 55% !important;
+        padding: 8px !important;
+    }
+
+    .reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+    .equipment-single {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-rows: auto minmax(0, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+    .equipment-single > .equipment-photo {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        max-width: 120px !important;
+    }
+
+    .reader-panel.chapter-panel.chapter-opening-page.equipment-dossier-page
+    .equipment-single > .equipment-details {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+    }
+}
+
+/* =========================================
+   CENTRE THE COMPLETE EQUIPMENT CONTENT
+========================================= */
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.chapter-reading-inner {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+
+    margin: 0 auto !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* Image + text as one centred group */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single {
+    display: grid !important;
+    grid-template-columns: 260px minmax(0, 620px) !important;
+
+    width: fit-content !important;
+    max-width: 100% !important;
+
+    height: auto !important;
+    max-height: 100% !important;
+
+    margin: 0 auto !important;
+    padding: 0 !important;
+
+    gap: 38px !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Centre image vertically */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single > .equipment-photo {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    width: 100% !important;
+    max-width: 260px !important;
+
+    margin: 0 !important;
+    align-self: center !important;
+}
+
+/* Text occupies the second column */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single > .equipment-details {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+
+    width: 100% !important;
+    max-width: 620px !important;
+    min-width: 0 !important;
+
+    height: auto !important;
+    max-height: 75vh !important;
+
+    margin: 0 !important;
+    padding: 0 12px 15px 0 !important;
+
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single {
+        grid-template-columns: minmax(0, 1fr) !important;
+        width: 100% !important;
+        gap: 18px !important;
+    }
+
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single > .equipment-photo,
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single > .equipment-details {
+        grid-column: 1 !important;
+        grid-row: auto !important;
+    }
+}
+
+/* =========================================
+   CENTRE-ALIGN EQUIPMENT TEXT
+========================================= */
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details {
+    text-align: center !important;
+}
+
+/* Equipment title and category */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-card-heading {
+    text-align: center !important;
+}
+
+/* Purpose and description */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-purpose,
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-description {
+    text-align: center !important;
+}
+
+/* Location and status */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-meta {
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+/* Centre individual metadata items */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-meta > * {
+    text-align: center !important;
+}
+
+/* Keep heading divider centred */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-card-heading {
+    width: 100% !important;
 }
 
 
 /* =========================================================
-   V5 — CHAPTER TITLE DIRECTLY BELOW MISSION NAME
-   + TRANSPARENT READING COPY BACKGROUNDS
-   ========================================================= */
+   FINAL EQUIPMENT PAGE FIX
+   Image on the left; all equipment text centred on the right.
+   Overrides the earlier V11–V15 equipment alignment rules.
+========================================================= */
 
-/* Continuation pages: place the chapter label just below the
-   mission name in the reader header, not halfway down the page. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-  top: clamp(54px, 8vh, 82px) !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translateX(-50%) !important;
-  width: max-content !important;
-  max-width: min(92%, 1050px) !important;
-  padding: clamp(10px, 1.4vh, 16px) clamp(22px, 3vw, 44px) !important;
-  margin: 0 !important;
+/* Keep the equipment card in a two-column layout */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:has(.equipment-photo) {
+    display: grid !important;
+    grid-template-columns: minmax(190px, 0.72fr) minmax(0, 1.28fr) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    align-items: center !important;
+    column-gap: clamp(20px, 3vw, 44px) !important;
+    width: min(100%, 1120px) !important;
+    max-width: 1120px !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 auto !important;
+    padding: clamp(14px, 2vw, 24px) !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
 }
 
-/* The content starts below the title bar. */
-.reader-panel.chapter-panel.chapter-continuation-page > .chapter-reading-surface {
-  padding-top: clamp(125px, 17vh, 165px) !important;
+/* Image stays in the left column */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:has(.equipment-photo) > .equipment-photo {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    align-self: center !important;
+    justify-self: center !important;
+    width: 100% !important;
+    max-width: 280px !important;
+    margin: 0 auto !important;
 }
 
-/* Remove the card-like fill behind section headings and paragraphs.
-   Keep the page's own parchment background unchanged. */
-.reader-panel.chapter-panel .chapter-reading-inner,
-.reader-panel.chapter-panel .chapter-reading-copy,
-.reader-panel.chapter-panel .chapter-reading-copy .chapter-body,
-.reader-panel.chapter-panel .chapter-reading-copy .chapter-body p,
-.reader-panel.chapter-panel .chapter-reading-copy .chapter-body h2,
-.reader-panel.chapter-panel .chapter-reading-copy .chapter-body h3 {
-  background: transparent !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
+/* Entire text wrapper occupies the right column */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-single:has(.equipment-photo) > .equipment-details {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    text-align: center !important;
 }
 
-/* Also remove any pseudo-element overlays used as text-card decoration. */
-.reader-panel.chapter-panel .chapter-reading-inner::before,
-.reader-panel.chapter-panel .chapter-reading-inner::after,
-.reader-panel.chapter-panel .chapter-reading-copy::before,
-.reader-panel.chapter-panel .chapter-reading-copy::after {
-  background: transparent !important;
-  box-shadow: none !important;
-  border: 0 !important;
-  content: none !important;
+/* Centre the equipment title and category */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-card-heading {
+    width: 100% !important;
+    text-align: center !important;
+    margin: 0 0 12px !important;
+    padding-bottom: 12px !important;
 }
 
-@media (max-width: 760px) {
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-heading {
-    top: 48px !important;
-    max-width: 94% !important;
-  }
+/* Centre purpose and description */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-purpose,
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-description {
+    width: 100% !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
 
-  .reader-panel.chapter-panel.chapter-continuation-page > .chapter-reading-surface {
-    padding-top: 112px !important;
-  }
+/* Centre location and status */
+.reader-panel.chapter-panel.equipment-dossier-page
+.equipment-details .equipment-meta {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+    text-align: center !important;
+}
+
+/* Keep the outer reading surface as the only scroll container */
+.reader-panel.chapter-panel.equipment-dossier-page
+.chapter-reading-surface {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+    overscroll-behavior-y: contain !important;
+}
+
+.reader-panel.chapter-panel.equipment-dossier-page
+.chapter-reading-inner {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Mobile: image above the centred equipment details */
+@media (max-width: 700px) {
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single:has(.equipment-photo) {
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        row-gap: 14px !important;
+    }
+
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single:has(.equipment-photo) > .equipment-photo {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        max-width: 200px !important;
+    }
+
+    .reader-panel.chapter-panel.equipment-dossier-page
+    .equipment-single:has(.equipment-photo) > .equipment-details {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+    }
 }
