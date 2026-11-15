@@ -102,7 +102,13 @@ export async function renderHome(app, openBook) {
       status.textContent = `${visible.length} ${visible.length === 1 ? 'volume' : 'volumes'} in the collection`;
       const grouped = new Map();
       visible.forEach(mission => {
-        const category = mission.destination || mission.mission_type || 'Other expeditions';
+        const destination = (mission.destination || '').trim().toLowerCase();
+
+        const category =
+            destination.includes('mars') ? 'Mars' :
+            destination.includes('moon') ? 'Moon' :
+            'Universe';
+            
         if (!grouped.has(category)) grouped.set(category, []);
         grouped.get(category).push(mission);
       });
